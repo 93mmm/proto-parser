@@ -37,3 +37,13 @@ func (p *ProtoParser) skipWhiteSpaces() {
 		}
 	}
 }
+
+func (p *ProtoParser) skipUntilNextLine() {
+	for !p.EOF() {
+		if !p.Peek('\n') {
+			p.Next()
+		} else {
+			break
+		}
+	}
+}
