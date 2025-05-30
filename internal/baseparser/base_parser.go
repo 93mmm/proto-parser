@@ -8,11 +8,15 @@ type BaseParser struct {
 	src         source.Source
 	currentChar rune
 	eof         bool
+	lineNumber  int
+	charNumber  int
 }
 
 func NewBaseParser(src source.Source) *BaseParser {
 	p := &BaseParser{
-		src: src,
+		src:        src,
+		lineNumber: 1,
+		charNumber: 0,
 	}
 	p.Next()
 	return p
@@ -36,6 +40,8 @@ func (p *BaseParser) Next() rune {
 		p.eof = true
 		p.currentChar = source.EOF
 	}
+
+	p.incrementCharOrLineNumber(next)
 	p.currentChar = next
 	return r
 }
@@ -47,3 +53,18 @@ func (p *BaseParser) EOF() bool {
 func (p *BaseParser) Test(expected rune) bool {
 	return expected == p.currentChar
 }
+
+func (p *BaseParser) incrementCharOrLineNumber(c rune) {
+	if p.EOF() {
+		return
+	}
+	if c == '\n' {
+		p.lineNumber++
+		p.charNumber = 0
+		return
+	}
+	p.charNumber++
+}
+
+func (p *BaseParser) LineNumber() int { return p.lineNumber }
+func (p *BaseParser) CharNumber() int { return p.charNumber }

@@ -7,8 +7,6 @@ import (
 
 type ProtoParser struct {
 	base.BaseParser
-	line int
-	char int
 }
 
 func NewProtoParser(src source.Source) *ProtoParser {
