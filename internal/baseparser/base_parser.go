@@ -1,7 +1,7 @@
 package baseparser
 
 import (
-	"github.com/93mmm/protoc-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/source"
 )
 
 type BaseParser struct {

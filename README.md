@@ -1,2 +1,2 @@
-# protoc-parser
+# proto-parser
 protosym console utility (test task for ozon intership)

@@ -17,7 +17,7 @@ func TestStringSource_ReadRunes(t *testing.T) {
 
 func TestFileSource_ReadRunes(t *testing.T) {
 	content := "very long \n\t\n\ttest striiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing\t\n"
-	filename := createTmpFile(t, "tmp*.protoc", content)
+	filename := createTmpFile(t, "tmp*.proto", content)
 	defer os.Remove(filename)
 
 	source, err := NewFileSource(filename)

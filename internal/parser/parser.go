@@ -1,18 +1,18 @@
 package parser
 
 import (
-	base "github.com/93mmm/protoc-parser/internal/baseparser"
-	"github.com/93mmm/protoc-parser/internal/source"
+	base "github.com/93mmm/proto-parser/internal/baseparser"
+	"github.com/93mmm/proto-parser/internal/source"
 )
 
-type ProtocParser struct {
+type ProtoParser struct {
 	base.BaseParser
 	line int
 	char int
 }
 
-func NewProtocParser(src source.Source) *ProtocParser {
-	return &ProtocParser{
+func NewProtoParser(src source.Source) *ProtoParser {
+	return &ProtoParser{
 		BaseParser: *base.NewBaseParser(src),
 	}
 }
