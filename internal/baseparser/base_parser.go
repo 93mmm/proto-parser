@@ -2,6 +2,7 @@ package baseparser
 
 import (
 	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/utils"
 )
 
 type BaseParser struct {
@@ -68,3 +69,6 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 
 func (p *BaseParser) LineNumber() int { return p.lineNumber }
 func (p *BaseParser) CharNumber() int { return p.charNumber }
+
+func (p *BaseParser) PeekSymbol() bool { return utils.IsSymbol(p.currentChar) }
+func (p *BaseParser) PeekWhiteSpace() bool { return utils.IsWhiteSpace(p.currentChar) }
