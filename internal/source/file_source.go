@@ -32,7 +32,7 @@ func NewFileSource(filename string) (*fileSource, error) {
 func (s *fileSource) Next() (rune, error) {
 	r, _, err := s.src.ReadRune()
 	if err != nil {
-		return 0, err
+		return EOF, err
 	}
 	return r, nil 
 }

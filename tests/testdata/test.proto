@@ -1,0 +1,26 @@
+import "google/protobuf/timestamp.proto";
+// google/protobuf/timestamp.proto import 5:8-41
+
+service Example {
+  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+  ExampleRPC method 10:7-17
+}
+// Example service 9:9-16
+
+enum ExampleEnum {
+  ONE = 0;
+  TWO = 1;
+  THREE = 2;
+}
+// ExampleEnum enum 10:6-17
+
+message ExampleRPCRequest {
+  message Emb { string field11 = 1; }
+  ExampleEnum field1 = 1;
+  Emb filed2 = 2;
+  google.protobuf.Timestamp filed3 = 3;
+}
+// ExampleRPCRequest message 19:9-26
+
+message ExampleRPCResponse {}
+// ExampleRPCResponse message 26:9-77

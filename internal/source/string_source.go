@@ -17,7 +17,7 @@ func NewStringSource(s string) *stringSource {
 
 func (s *stringSource) Next() (rune, error) {
 	if s.pos >= len(s.src) {
-		return 0, io.EOF
+		return EOF, io.EOF
 	}
 	r := s.src[s.pos]
 	s.pos++
