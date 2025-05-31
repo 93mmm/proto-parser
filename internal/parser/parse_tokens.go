@@ -34,29 +34,43 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 }
 
 func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Package)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Import)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Option)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseServiceToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Service)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Rpc)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseEnumToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Enum)
+	return s, nil
 }
 
 func (p *ProtoParser) ParseMessageToken() (*symbols.Symbol, error) {
-	return nil, nil
+	s := &symbols.Symbol{}
+	s.SetType(token.Message)
+	return s, nil
 }
