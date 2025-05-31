@@ -23,8 +23,8 @@ func NewBaseParser(src source.Source) *BaseParser {
 	return p
 }
 
-// Peek next if expected matches current
-// Remain current if expected not matches current
+// If expected matches current, return true and go forward
+// Else return false and do nothing
 func (p *BaseParser) Peek(expected rune) bool {
 	if p.Test(expected) {
 		p.Next()
@@ -33,7 +33,7 @@ func (p *BaseParser) Peek(expected rune) bool {
 	return false
 }
 
-// Peek next
+// Return current and go forward
 func (p *BaseParser) Next() rune {
 	r := p.currentChar
 	next, err := p.src.Next()
@@ -70,5 +70,7 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 func (p *BaseParser) LineNumber() int { return p.lineNumber }
 func (p *BaseParser) CharNumber() int { return p.charNumber }
 
-func (p *BaseParser) PeekSymbol() bool { return utils.IsSymbol(p.currentChar) }
-func (p *BaseParser) PeekWhiteSpace() bool { return utils.IsWhiteSpace(p.currentChar) }
+func (p *BaseParser) TestQuote() bool      { return utils.IsQuote(p.currentChar) }
+func (p *BaseParser) TestKeyword() bool    { return utils.IsKeyword(p.currentChar) }
+func (p *BaseParser) TestName() bool       { return utils.IsName(p.currentChar) }
+func (p *BaseParser) TestWhiteSpace() bool { return utils.IsWhiteSpace(p.currentChar) }

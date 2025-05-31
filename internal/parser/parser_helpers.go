@@ -1,21 +1,37 @@
 package parser
 
-func (p *ProtoParser) extractWord() string {
+func (p *ProtoParser) extractKeyword() string {
 	word := make([]rune, 0, 30)
 
 	for !p.EOF() {
-		if p.PeekSymbol() {
+		if p.TestKeyword() {
 			word = append(word, p.Next())
 		} else {
 			break
 		}
 	}
+
+	return string(word)
+}
+
+func (p *ProtoParser) extractQuotedString() string {
+	word := make([]rune, 0, 30)
+
+	p.Peek('"') // TODO: we must check if error here
+	for !p.EOF() {
+		if p.Peek('"') {
+			break
+		} else {
+			word = append(word, p.Next())
+		}
+	}
+
 	return string(word)
 }
 
 func (p *ProtoParser) skipWhiteSpaces() {
 	for !p.EOF() {
-		if p.PeekWhiteSpace() {
+		if p.TestWhiteSpace() {
 			p.Next()
 		} else {
 			break

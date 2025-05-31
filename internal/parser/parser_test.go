@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestBaseParser_ExtractWord(t *testing.T) {
+func TestParser_ExtractWord(t *testing.T) {
 	input := "hello \t\n\t    world"
 	expected := []string{
 		"hello",
@@ -16,18 +16,20 @@ func TestBaseParser_ExtractWord(t *testing.T) {
 	parser := NewProtoParser(source.NewStringSource(input))
 
 	for _, word := range expected {
-		assert.Equal(t, word, parser.extractWord())
+		assert.Equal(t, word, parser.extractKeyword())
 		parser.skipWhiteSpaces()
 	}
-	assert.Equal(t, "", parser.extractWord())
+	assert.Equal(t, "", parser.extractKeyword())
 }
-func TestBaseParser_SkipUntilNextLine(t *testing.T) {
+
+func TestParser_SkipUntilNextLine(t *testing.T) {
 	input := "hello world this is\n fine!"
 	parser := NewProtoParser(source.NewStringSource(input))
 
-	parser.extractWord()
+	parser.extractKeyword()
 	parser.skipUntilNextLine()
 	parser.skipWhiteSpaces()
-	
-	assert.Equal(t, "fine", parser.extractWord())
+
+	assert.Equal(t, "fine", parser.extractKeyword())
 }
+

@@ -2,6 +2,20 @@ package utils
 
 import "unicode"
 
+func IsKeyword(symbol rune) bool {
+	return unicode.IsLetter(symbol) &&
+		unicode.IsLower(symbol)
+}
+
+func IsName(symbol rune) bool {
+	return unicode.IsLetter(symbol) ||
+		symbol == '_'
+}
+
+func IsQuote(symbol rune) bool {
+	return symbol == '"'
+}
+
 func IsValidInProto(symbol rune) bool {
 	return unicode.IsLetter(symbol) ||
 		unicode.IsDigit(symbol) ||
@@ -9,13 +23,6 @@ func IsValidInProto(symbol rune) bool {
 		symbol == ' ' ||
 		symbol == '\t' ||
 		symbol == '\n'
-}
-
-func IsSymbol(symbol rune) bool {
-	return unicode.IsLetter(symbol) ||
-		unicode.IsDigit(symbol) ||
-		symbol == '_' ||
-		symbol == '"'
 }
 
 func IsWhiteSpace(symbol rune) bool {
