@@ -1,25 +1,40 @@
 package parser
 
+// TODO: DRY principle, maybe fix it?
+
 func (p *ProtoParser) extractKeyword() (string, error) {
 	p.skipWhiteSpaces()
 
-	word := make([]rune, 0, 30)
+	keyword := make([]rune, 0, 30)
 	for !p.EOF() {
 		if p.TestKeyword() {
-			word = append(word, p.Next())
+			keyword = append(keyword, p.Next())
 		} else {
 			break
 		}
 	}
-	if len(word) == 0 {
+	if len(keyword) == 0 {
 		return "", NewParserError("Expected keyword, found nothing", p.LineNumber(), p.CharNumber())
 	}
-	return string(word), nil
+	return string(keyword), nil
+}
+
+func (p *ProtoParser) extractName() (string, error) {
+	name := make([]rune, 0, 30)
+	for !p.EOF() {
+		if p.TestName() {
+			name = append(name, p.Next())
+		} else {
+			break
+		}
+	}
+	if len(name) == 0 {
+		return "", NewParserError("Expected keyword, found nothing", p.LineNumber(), p.CharNumber())
+	}
+	return string(name), nil
 }
 
 func (p *ProtoParser) extractQuotedString() (string, error) {
-	p.skipWhiteSpaces()
-
 	if !p.Peek('"') {
 		return "", NewParserError("Quote expected", p.LineNumber(), p.CharNumber())
 	}

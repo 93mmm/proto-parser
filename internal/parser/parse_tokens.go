@@ -18,14 +18,16 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s.SetLine(p.LineNumber())
 	s.SetStartChar(p.CharNumber())
 
+	p.skipWhiteSpaces()
 	name, err := p.extractQuotedString()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetEndChar(p.CharNumber())
 	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
 
+	p.skipWhiteSpaces()
 	if !p.Peek(';') {
 		return nil, NewParserError("Expected ; found nothing", p.LineNumber(), p.CharNumber())
 	}
@@ -33,9 +35,25 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	return s, nil
 }
 
+// package example;
 func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Package)
+	
+	p.skipWhiteSpaces()
+	name, err := p.extractName()
+	if err != nil {
+		return nil, err
+	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	p.skipWhiteSpaces()
+	if !p.Peek(';') {
+		return nil, NewParserError("Expected ; found nothing", p.LineNumber(), p.CharNumber())
+	}
+
 	return s, nil
 }
 
