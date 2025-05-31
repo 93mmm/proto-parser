@@ -25,6 +25,7 @@ func TestParseTokens_Syntax(t *testing.T) {
 				t.Error("result is nil", err)
 				continue
 			}
+			// TODO: maybe regexp???
 			assert.Equal(t, "syntax", result.Type())
 			assert.Equal(t, "proto3", result.Name())
 			assert.NoError(t, err)
@@ -32,12 +33,20 @@ func TestParseTokens_Syntax(t *testing.T) {
 	})
 
 	t.Run("With errors", func(t *testing.T) {
-		// input := `syntax = "proto3";`
-		// result, err := NewProtoParser(source.NewStringSource(input)).ParseSyntaxToken()
-		//
-		// assert.Equal(t, "syntax", result.Type())
-		// assert.Equal(t, "proto3", result.Name())
-		// assert.NoError(t, err)
+		input := []string{
+			`syntax = "proto3";`,
+			`syntax  "proto3";`,
+			`syntax = "proto3"`,
+			`syntax = "proto3;`,
+			`syntax = "proto3` + "\n" + `;`,
+		}
+		
+		for _, in := range input {
+			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+
+			assert.Nil(t, result)
+			assert.Error(t, err)
+		}
 	})
 }
 
@@ -60,6 +69,21 @@ func TestParseTokens_Package(t *testing.T) {
 			assert.Equal(t, "package", result.Type())
 			assert.Equal(t, "example", result.Name())
 			assert.NoError(t, err)
+		}
+	})
+
+	t.Run("With errors", func(t *testing.T) {
+		input := []string{
+			"package example",
+			"packageexample",
+			"package; example",
+		}
+		
+		for _, in := range input {
+			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+
+			assert.Nil(t, result)
+			assert.Error(t, err)
 		}
 	})
 }
