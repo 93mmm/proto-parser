@@ -8,23 +8,41 @@ import (
 )
 
 func TestParser_ExtractKeyword(t *testing.T) {
-	input := "hello \t\n\t    world"
-	expected := []string{
-		"hello",
-		"world",
-	}
-	parser := NewProtoParser(source.NewStringSource(input))
+	t.Run("Regular string", func(t *testing.T) {
+		input := "one two three\n\t\n four five!"
+		parser := NewProtoParser(source.NewStringSource(input))
+		expected := []string{
+			"one", "two", "three", "four", "five",
+		}
 
-	for _, word := range expected {
+		for _, e := range expected {
+			actual, err := parser.extractKeyword()
+			assert.Equal(t, e, actual)
+			assert.NoError(t, err)
+			parser.skipWhiteSpaces()
+		}
 		actual, err := parser.extractKeyword()
-		assert.Equal(t, word, actual)
-		assert.NoError(t, err)
-		parser.skipWhiteSpaces()
-	}
+		assert.Equal(t, "", actual)
+		assert.Error(t, err)
+	})
 
-	actual, err := parser.extractKeyword()
-	assert.Equal(t, "", actual)
-	assert.Error(t, err)
+	t.Run("Empty string", func(t *testing.T) {
+		input := ""
+		parser := NewProtoParser(source.NewStringSource(input))
+
+		actual, err := parser.extractKeyword()
+		assert.Equal(t, "", actual)
+		assert.Error(t, err)
+	})
+
+	t.Run("Not keyword", func(t *testing.T) {
+		input := ",hello"
+		parser := NewProtoParser(source.NewStringSource(input))
+
+		actual, err := parser.extractKeyword()
+		assert.Equal(t, "", actual)
+		assert.Error(t, err)
+	})
 }
 
 func TestParser_SkipUntilNextLine(t *testing.T) {
