@@ -1,20 +1,24 @@
 package parser
 
 import (
+	"strings"
 	"testing"
 
 	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/stretchr/testify/assert"
 )
 
+func withSpaces(parts ...string) string {
+	spaces := "\n \t\n \t"
+	return spaces + strings.Join(parts, spaces) + spaces
+}
+
 func TestParseTokens_Syntax(t *testing.T) {
 	t.Run("Normal", func(t *testing.T) {
-		spaces := "\n\t\n\t"
 		input := []string{
 			`syntax = "proto3";`,
 			`syntax="proto3";`,
-			spaces + `syntax="proto3";` + spaces,
-			spaces + `syntax` + spaces + `=` + spaces + `"proto3"` + spaces + `;`,
+			withSpaces("syntax", "=", `"proto3"`, ";"),
 		}
 		for _, in := range input {
 			parser := NewProtoParser(source.NewStringSource(in))
@@ -52,10 +56,9 @@ func TestParseTokens_Syntax(t *testing.T) {
 
 func TestParseTokens_Package(t *testing.T) {
 	t.Run("Normal", func(t *testing.T) {
-		spaces := "\n\t\n\t"
 		input := []string{
 			"package example;",
-			spaces + "package" + spaces + "example" + spaces + ";" + spaces,
+			withSpaces("package", "example", ";"),
 		}
 		for _, in := range input {
 			parser := NewProtoParser(source.NewStringSource(in))
@@ -77,6 +80,44 @@ func TestParseTokens_Package(t *testing.T) {
 			"package example",
 			"packageexample",
 			"package; example",
+		}
+		
+		for _, in := range input {
+			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+
+			assert.Nil(t, result)
+			assert.Error(t, err)
+		}
+	})
+}
+
+func TestParseTokens_Import(t *testing.T) {
+	t.Run("Normal", func(t *testing.T) {
+		input := []string{
+			`import "google/protobuf/timestamp.proto";`,
+			withSpaces("import", `"google/protobuf/timestamp.proto"`, ";"),
+		}
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseImportToken()
+
+			if result == nil {
+				t.Error("result is nil", err)
+				continue
+			}
+			assert.Equal(t, "import", result.Type())
+			assert.Equal(t, "google/protobuf/timestamp.proto", result.Name())
+			assert.NoError(t, err)
+		}
+	})
+
+	t.Run("With Errors", func(t *testing.T) {
+		input := []string{
+			`import "google/protobuf/timestamp.proto"`,
+			`import"google/protobuf/timestamp.proto";`,
+			`import "google/protobuf/timestamp.proto;`,
+			`import google/protobuf/timestamp.proto";`,
 		}
 		
 		for _, in := range input {

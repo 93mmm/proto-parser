@@ -1,5 +1,7 @@
 package parser
 
+import "fmt"
+
 // TODO: DRY principle, maybe fix it?
 
 func (p *ProtoParser) extractKeyword() (string, error) {
@@ -61,6 +63,22 @@ func (p *ProtoParser) skipWhiteSpaces() {
 			break
 		}
 	}
+}
+
+func (p *ProtoParser) peekSymbol(symbol rune) error {
+	p.skipWhiteSpaces()
+	if !p.Peek(symbol) {
+		return NewParserError(fmt.Sprintf("Expected %c found nothing", symbol), p.LineNumber(), p.CharNumber())
+	}
+	return nil
+}
+
+func (p *ProtoParser) peekSemicolon() error {
+	return p.peekSymbol(';')
+}
+
+func (p *ProtoParser) peekEquals() error {
+	return p.peekSymbol('=')
 }
 
 // TODO: maybe we don't need it?

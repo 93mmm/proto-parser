@@ -10,15 +10,15 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Syntax)
 
-	p.skipWhiteSpaces()
-	if !p.Peek('=') {
-		return nil, NewParserError("Expected = found nothing", p.LineNumber(), p.CharNumber())
+	if err := p.peekEquals(); err != nil {
+		return nil, err
 	}
+
+	p.skipWhiteSpaces()
 
 	s.SetLine(p.LineNumber())
 	s.SetStartChar(p.CharNumber())
 
-	p.skipWhiteSpaces()
 	name, err := p.extractQuotedString()
 	if err != nil {
 		return nil, err
@@ -27,12 +27,7 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	p.skipWhiteSpaces()
-	if !p.Peek(';') {
-		return nil, NewParserError("Expected ; found nothing", p.LineNumber(), p.CharNumber())
-	}
-
-	return s, nil
+	return s, p.peekSemicolon()
 }
 
 // package example;
@@ -41,6 +36,10 @@ func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s.SetType(token.Package)
 	
 	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
@@ -49,18 +48,28 @@ func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	p.skipWhiteSpaces()
-	if !p.Peek(';') {
-		return nil, NewParserError("Expected ; found nothing", p.LineNumber(), p.CharNumber())
-	}
-
-	return s, nil
+	return s, p.peekSemicolon()
 }
 
+// import "google/protobuf/timestamp.proto";
 func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Import)
-	return s, nil
+
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractQuotedString()
+	if err != nil {
+		return nil, err
+	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	return s, p.peekSemicolon()
 }
 
 func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
