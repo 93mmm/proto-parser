@@ -26,7 +26,7 @@ func (p *ProtoParser) extractQuotedString() (string, error) {
 		case p.Peek('"'):
 			return string(word), nil
 		case p.Test('\n'):
-			return string(word), NewParserError("Not found end of quoted string", p.LineNumber(), p.CharNumber())
+			return "", NewParserError("Not found end of quoted string", p.LineNumber(), p.CharNumber())
 		default:
 			word = append(word, p.Next())
 		}
