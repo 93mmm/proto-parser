@@ -47,7 +47,6 @@ func TestParser_ExtractKeyword(t *testing.T) {
 	})
 }
 
-// TODO: test when only one quote, when no quotes, when empty string etc
 func TestParser_ExtractQuotedString(t *testing.T) {
 	t.Run("Normal quotes", func(t *testing.T) {
 		input := "\" one \""
