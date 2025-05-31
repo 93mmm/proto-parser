@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParser_ExtractWord(t *testing.T) {
+func TestParser_ExtractKeyword(t *testing.T) {
 	input := "hello \t\n\t    world"
 	expected := []string{
 		"hello",
@@ -16,10 +16,15 @@ func TestParser_ExtractWord(t *testing.T) {
 	parser := NewProtoParser(source.NewStringSource(input))
 
 	for _, word := range expected {
-		assert.Equal(t, word, parser.extractKeyword())
+		actual, err := parser.extractKeyword()
+		assert.Equal(t, word, actual)
+		assert.NoError(t, err)
 		parser.skipWhiteSpaces()
 	}
-	assert.Equal(t, "", parser.extractKeyword())
+
+	actual, err := parser.extractKeyword()
+	assert.Equal(t, "", actual)
+	assert.Error(t, err)
 }
 
 func TestParser_SkipUntilNextLine(t *testing.T) {
@@ -30,6 +35,18 @@ func TestParser_SkipUntilNextLine(t *testing.T) {
 	parser.skipUntilNextLine()
 	parser.skipWhiteSpaces()
 
-	assert.Equal(t, "fine", parser.extractKeyword())
+	actual, err := parser.extractKeyword()
+	assert.Equal(t, "fine", actual)
+	assert.NoError(t, err)
 }
 
+// TODO: test when only one quote, when no quotes, when empty string etc
+func TestParser_ExtractQuotedString(t *testing.T) {
+	input := "\" hello world \""
+	expected := " hello world "
+	parser := NewProtoParser(source.NewStringSource(input))
+
+	actual, err := parser.extractQuotedString()
+	assert.Equal(t, expected, actual)
+	assert.NoError(t, err)
+}

@@ -70,6 +70,8 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 func (p *BaseParser) LineNumber() int { return p.lineNumber }
 func (p *BaseParser) CharNumber() int { return p.charNumber }
 
+func (p *BaseParser) CurrentChar() rune { return p.currentChar }
+
 func (p *BaseParser) TestQuote() bool      { return utils.IsQuote(p.currentChar) }
 func (p *BaseParser) TestKeyword() bool    { return utils.IsKeyword(p.currentChar) }
 func (p *BaseParser) TestName() bool       { return utils.IsName(p.currentChar) }

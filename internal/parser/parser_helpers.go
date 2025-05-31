@@ -1,8 +1,7 @@
 package parser
 
-func (p *ProtoParser) extractKeyword() string {
+func (p *ProtoParser) extractKeyword() (string, error) {
 	word := make([]rune, 0, 30)
-
 	for !p.EOF() {
 		if p.TestKeyword() {
 			word = append(word, p.Next())
@@ -10,23 +9,29 @@ func (p *ProtoParser) extractKeyword() string {
 			break
 		}
 	}
-
-	return string(word)
+	if len(word) == 0 {
+		return "", NewParserError("Expected keyword, found nothing", p.LineNumber(), p.CharNumber())
+	}
+	return string(word), nil
 }
 
-func (p *ProtoParser) extractQuotedString() string {
-	word := make([]rune, 0, 30)
+func (p *ProtoParser) extractQuotedString() (string, error) {
+	if !p.Peek('"') {
+		return "", NewParserError("Quote expected", p.LineNumber(), p.CharNumber())
+	}
 
-	p.Peek('"') // TODO: we must check if error here
+	word := make([]rune, 0, 30)
 	for !p.EOF() {
-		if p.Peek('"') {
-			break
-		} else {
+		switch {
+		case p.Peek('"'):
+			return string(word), nil
+		case p.Test('\n'):
+			return string(word), NewParserError("Not found end of quoted string", p.LineNumber(), p.CharNumber())
+		default:
 			word = append(word, p.Next())
 		}
 	}
-
-	return string(word)
+	return "", NewParserError("EOF reached, nothing to extract", p.LineNumber(), p.CharNumber())
 }
 
 func (p *ProtoParser) skipWhiteSpaces() {
@@ -39,6 +44,7 @@ func (p *ProtoParser) skipWhiteSpaces() {
 	}
 }
 
+// TODO: maybe we don't need it?
 func (p *ProtoParser) skipUntilNextLine() {
 	for !p.EOF() {
 		if !p.Peek('\n') {

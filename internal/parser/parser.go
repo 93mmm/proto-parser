@@ -36,7 +36,7 @@ func (p *ProtoParser) ParseDocument() []*symbols.Symbol {
 
 	for !p.EOF() {
 		p.skipWhiteSpaces()
-		word := p.extractKeyword()
+		word, _ := p.extractKeyword() // TODO: check error
 		symbols = append(symbols, p.tokens[word]()) // TODO: panic if nil func ofc
 	}
 	return symbols
