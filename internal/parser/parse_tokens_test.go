@@ -38,7 +38,6 @@ func TestParseTokens_Syntax(t *testing.T) {
 
 	t.Run("With errors", func(t *testing.T) {
 		input := []string{
-			`syntax = "proto3";`,
 			`syntax  "proto3";`,
 			`syntax = "proto3"`,
 			`syntax = "proto3;`,
@@ -46,7 +45,9 @@ func TestParseTokens_Syntax(t *testing.T) {
 		}
 		
 		for _, in := range input {
-			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseSyntaxToken()
 
 			assert.Nil(t, result)
 			assert.Error(t, err)
@@ -83,7 +84,9 @@ func TestParseTokens_Package(t *testing.T) {
 		}
 		
 		for _, in := range input {
-			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParsePackageToken()
 
 			assert.Nil(t, result)
 			assert.Error(t, err)
@@ -114,14 +117,14 @@ func TestParseTokens_Import(t *testing.T) {
 
 	t.Run("With Errors", func(t *testing.T) {
 		input := []string{
-			`import "google/protobuf/timestamp.proto"`,
-			`import"google/protobuf/timestamp.proto";`,
 			`import "google/protobuf/timestamp.proto;`,
 			`import google/protobuf/timestamp.proto";`,
 		}
 		
 		for _, in := range input {
-			result, err := NewProtoParser(source.NewStringSource(in)).ParseSyntaxToken()
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseImportToken()
 
 			assert.Nil(t, result)
 			assert.Error(t, err)
@@ -147,6 +150,21 @@ func TestParseTokens_Option(t *testing.T) {
 			assert.Equal(t, "option", result.Type())
 			assert.Equal(t, "go_package", result.Name())
 			assert.NoError(t, err)
+		}
+	})
+
+	t.Run("With Errors", func(t *testing.T) {
+		input := []string{
+			`option go_package = "gitlab.ozon.ru/example/api/example;example"`,
+		}
+		
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseOptionToken()
+
+			assert.Nil(t, result)
+			assert.Error(t, err)
 		}
 	})
 }

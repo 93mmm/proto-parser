@@ -27,7 +27,10 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	return s, p.peekSemicolon()
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 // package example;
@@ -48,7 +51,10 @@ func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	return s, p.peekSemicolon()
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 // import "google/protobuf/timestamp.proto";
@@ -69,7 +75,10 @@ func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	return s, p.peekSemicolon()
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
@@ -99,29 +108,48 @@ func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
 		return nil, err
 	}
 
-	return s, p.peekSemicolon()
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
+	return s, nil
 }
 
 func (p *ProtoParser) ParseServiceToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
+
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
 	return s, nil
 }
 
 func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Rpc)
+
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
 	return s, nil
 }
 
 func (p *ProtoParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
+
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
 	return s, nil
 }
 
 func (p *ProtoParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
+
+	if err := p.peekSemicolon(); err != nil {
+		return nil, err
+	}
 	return s, nil
 }
