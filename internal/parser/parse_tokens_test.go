@@ -128,3 +128,25 @@ func TestParseTokens_Import(t *testing.T) {
 		}
 	})
 }
+
+func TestParseTokens_Option(t *testing.T) {
+	t.Run("Normal", func(t *testing.T) {
+		input := []string{
+			`option go_package = "gitlab.ozon.ru/example/api/example;example";`,
+			withSpaces("option", "go_package", "=", `"gitlab.ozon.ru/example/api/example;example"`, ";"),
+		}
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseOptionToken()
+
+			if result == nil {
+				t.Error("result is nil", err)
+				continue
+			}
+			assert.Equal(t, "option", result.Type())
+			assert.Equal(t, "go_package", result.Name())
+			assert.NoError(t, err)
+		}
+	})
+}

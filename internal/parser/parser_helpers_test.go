@@ -79,6 +79,18 @@ func TestParser_ExtractQuotedString(t *testing.T) {
 	})
 }
 
+func TestParser_ExtractName(t *testing.T) {
+	t.Run("Normal names", func(t *testing.T) {
+		input := "One_Two_Three"
+		expected := "One_Two_Three"
+		parser := NewProtoParser(source.NewStringSource(input))
+
+		actual, err := parser.extractName()
+		assert.Equal(t, expected, actual)
+		assert.NoError(t, err)
+	})
+}
+
 // TODO: maybe we don't need it
 func TestParser_SkipUntilNextLine(t *testing.T) {
 	input := "hello world this is\n fine!"

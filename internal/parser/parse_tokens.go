@@ -72,10 +72,34 @@ func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
 	return s, p.peekSemicolon()
 }
 
+// option go_package = "gitlab.ozon.ru/example/api/example;example";
 func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Option)
-	return s, nil
+
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractName()
+	if err != nil {
+		return nil, err
+	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	if err := p.peekEquals(); err != nil {
+		return nil, err
+	}
+
+	p.skipWhiteSpaces()
+	if _, err := p.extractQuotedString(); err != nil {
+		return nil, err
+	}
+
+	return s, p.peekSemicolon()
 }
 
 func (p *ProtoParser) ParseServiceToken() (*symbols.Symbol, error) {

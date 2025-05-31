@@ -4,7 +4,7 @@ package example;
 
 import "google/protobuf/timestamp.proto";
 
-option go _package = "gitlab.ozon.ru/example/api/example;example";
+option go_package = "gitlab.ozon.ru/example/api/example;example";
 
 service Example {
   rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};

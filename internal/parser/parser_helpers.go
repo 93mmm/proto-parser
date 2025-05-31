@@ -31,7 +31,7 @@ func (p *ProtoParser) extractName() (string, error) {
 		}
 	}
 	if len(name) == 0 {
-		return "", NewParserError("Expected keyword, found nothing", p.LineNumber(), p.CharNumber())
+		return "", NewParserError("Expected name, found nothing", p.LineNumber(), p.CharNumber())
 	}
 	return string(name), nil
 }
