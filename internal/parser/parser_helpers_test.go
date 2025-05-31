@@ -79,6 +79,7 @@ func TestParser_ExtractQuotedString(t *testing.T) {
 	})
 }
 
+// TODO: maybe we don't need it
 func TestParser_SkipUntilNextLine(t *testing.T) {
 	input := "hello world this is\n fine!"
 	parser := NewProtoParser(source.NewStringSource(input))

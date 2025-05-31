@@ -9,7 +9,7 @@ import (
 
 type ProtoParser struct {
 	base.BaseParser
-	tokens map[string]func() *symbols.Symbol
+	tokens map[string]func() (*symbols.Symbol, error)
 }
 
 func NewProtoParser(src source.Source) *ProtoParser {
@@ -17,7 +17,7 @@ func NewProtoParser(src source.Source) *ProtoParser {
 		BaseParser: *base.NewBaseParser(src),
 	}
 
-	p.tokens = map[string]func() *symbols.Symbol{
+	p.tokens = map[string]func() (*symbols.Symbol, error) {
 		token.Syntax:  p.ParseSyntaxToken,
 		token.Package: p.ParsePackageToken,
 		token.Import:  p.ParseImportToken,
@@ -35,41 +35,13 @@ func (p *ProtoParser) ParseDocument() []*symbols.Symbol {
 	symbols := make([]*symbols.Symbol, 0, 10)
 
 	for !p.EOF() {
-		p.skipWhiteSpaces()
 		word, _ := p.extractKeyword() // TODO: check error
-		symbols = append(symbols, p.tokens[word]()) // TODO: panic if nil func ofc
+
+		parsed, err := p.tokens[word]()
+		if err != nil {
+			panic(err) // TODO: not panic here!
+		}
+		symbols = append(symbols, parsed)
 	}
 	return symbols
-}
-
-func (p *ProtoParser) ParseSyntaxToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParsePackageToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseImportToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseOptionToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseServiceToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseRpcToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseEnumToken() *symbols.Symbol {
-	return nil
-}
-
-func (p *ProtoParser) ParseMessageToken() *symbols.Symbol {
-	return nil
 }

@@ -1,6 +1,8 @@
 package parser
 
 func (p *ProtoParser) extractKeyword() (string, error) {
+	p.skipWhiteSpaces()
+
 	word := make([]rune, 0, 30)
 	for !p.EOF() {
 		if p.TestKeyword() {
@@ -16,6 +18,8 @@ func (p *ProtoParser) extractKeyword() (string, error) {
 }
 
 func (p *ProtoParser) extractQuotedString() (string, error) {
+	p.skipWhiteSpaces()
+
 	if !p.Peek('"') {
 		return "", NewParserError("Quote expected", p.LineNumber(), p.CharNumber())
 	}
