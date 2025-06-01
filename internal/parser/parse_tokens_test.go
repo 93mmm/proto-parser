@@ -201,7 +201,25 @@ func TestParseTokens_Service(t *testing.T) {
 	})
 }
 
-// rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 func TestParseTokens_Rpc(t *testing.T) {
-	
+	t.Run("Normal", func(t *testing.T) {
+		input := []string{
+			"rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};",
+			"rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse);",
+			withSpaces("rpc", "ExampleRPC", "(", "ExampleRPCRequest", ")", "returns", "(", "ExampleRPCResponse", ")", "{", "}", ";"),
+		}
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseRpcToken()
+
+			if result == nil {
+				t.Error("result is nil", err)
+				continue
+			}
+			assert.Equal(t, "rpc", result.Type())
+			assert.Equal(t, "ExampleRPC", result.Name())
+			assert.NoError(t, err)
+		}
+	})
 }

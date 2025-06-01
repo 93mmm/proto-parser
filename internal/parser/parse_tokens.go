@@ -136,7 +136,7 @@ func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	if err := p.peekOpenCurlyBrace(); err != nil {
+	if err := p.peekOpenBrace(); err != nil {
 		return nil, err
 	}
 
@@ -152,10 +152,33 @@ func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	return rpcs, nil
 }
 
+// rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Rpc)
 
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractName()
+	if err != nil {
+		return nil, err
+	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	if _, err := p.extractNameBetweenParentheses(); err != nil {
+		return nil, err
+	}
+	p.extractKeyword()
+	if _, err := p.extractNameBetweenParentheses(); err != nil {
+		return nil, err
+	}
+
+	p.skipUntilMatch(';')
 	if err := p.peekSemicolon(); err != nil {
 		return nil, err
 	}

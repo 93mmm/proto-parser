@@ -55,6 +55,25 @@ func (p *ProtoParser) extractQuotedString() (string, error) {
 	return "", NewParserError("EOF reached, nothing to extract", p.LineNumber(), p.CharNumber())
 }
 
+func (p *ProtoParser) extractNameBetweenParentheses() (string, error) {
+	p.skipWhiteSpaces()
+	if err := p.peekOpenParenthesis(); err != nil {
+		return "", err
+	}
+	p.skipWhiteSpaces()
+	name, err := p.extractName()
+	if err != nil {
+		return "", err
+	}
+	p.skipWhiteSpaces()
+	if err := p.peekCloseParenthesis(); err != nil {
+		return "", err
+	}
+	p.skipWhiteSpaces()
+
+	return name, nil
+}
+
 func (p *ProtoParser) skipWhiteSpaces() {
 	for !p.EOF() {
 		if p.TestWhiteSpace() {
@@ -81,12 +100,20 @@ func (p *ProtoParser) peekEquals() error {
 	return p.peekSymbol('=')
 }
 
-func (p *ProtoParser) peekOpenCurlyBrace() error {
+func (p *ProtoParser) peekOpenBrace() error {
 	return p.peekSymbol('{')
 }
 
-func (p *ProtoParser) peekCloseCurlyBrace() error {
+func (p *ProtoParser) peekCloseBrace() error {
 	return p.peekSymbol('}')
+}
+
+func (p *ProtoParser) peekOpenParenthesis() error {
+	return p.peekSymbol('(')
+}
+
+func (p *ProtoParser) peekCloseParenthesis() error {
+	return p.peekSymbol(')')
 }
 
 func (p *ProtoParser) skipUntilMatch(symbol rune) {
