@@ -89,10 +89,9 @@ func (p *ProtoParser) peekCloseCurlyBrace() error {
 	return p.peekSymbol('}')
 }
 
-// TODO: maybe we don't need it?
-func (p *ProtoParser) skipUntilNextLine() {
+func (p *ProtoParser) skipUntilMatch(symbol rune) {
 	for !p.EOF() {
-		if !p.Peek('\n') {
+		if !p.Peek(symbol) {
 			p.Next()
 		} else {
 			break

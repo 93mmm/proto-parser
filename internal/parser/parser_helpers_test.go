@@ -101,16 +101,14 @@ func TestParser_ExtractName(t *testing.T) {
 	})
 }
 
-// TODO: maybe we don't need it
 func TestParser_SkipUntilNextLine(t *testing.T) {
-	input := "hello world this is\n fine!"
+	input := "one two : three"
 	parser := NewProtoParser(source.NewStringSource(input))
 
 	parser.extractKeyword()
-	parser.skipUntilNextLine()
-	parser.skipWhiteSpaces()
+	parser.skipUntilMatch(':')
 
 	actual, err := parser.extractKeyword()
-	assert.Equal(t, "fine", actual)
+	assert.Equal(t, "three", actual)
 	assert.NoError(t, err)
 }
