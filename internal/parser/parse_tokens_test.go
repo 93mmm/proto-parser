@@ -267,3 +267,27 @@ func TestParseTokens_Enum(t *testing.T) {
 		}
 	})
 }
+
+func TestParseTokens_Message(t *testing.T) {
+	t.Run("Normal", func(t *testing.T) {
+		input := []string{
+			`message ExampleRPCResponse {}`,
+			`message ExampleRPCResponse {
+				message Emb { string field11 = 1; }
+				ExampleEnum field1 = 1;
+				Emb filed2 = 2;
+				google.protobuf.Timestamp filed3 = 3;
+			}`,
+			withSpaces("message", "ExampleRPCResponse", "{", "}"),
+		}
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseMessageToken()
+
+			assert.Equal(t, "message", result.Type())
+			assert.Equal(t, "ExampleRPCResponse", result.Name())
+			assert.NoError(t, err)
+		}
+	})
+}

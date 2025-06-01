@@ -222,8 +222,20 @@ func (p *ProtoParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
 
-	if err := p.peekSemicolon(); err != nil {
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractName()
+	if err != nil {
 		return nil, err
 	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	p.skipUntilMatch('{')
+	p.skipUntilMatch('}')
 	return s, nil
 }
