@@ -9,23 +9,11 @@ import (
 
 type ProtoParser struct {
 	base.BaseParser
-	tokens map[string]func() (*symbols.Symbol, error)
 }
 
 func NewProtoParser(src source.Source) *ProtoParser {
 	p := &ProtoParser{
 		BaseParser: *base.NewBaseParser(src),
-	}
-
-	p.tokens = map[string]func() (*symbols.Symbol, error) {
-		token.Syntax:  p.ParseSyntaxToken,
-		token.Package: p.ParsePackageToken,
-		token.Import:  p.ParseImportToken,
-		token.Option:  p.ParseOptionToken,
-		token.Service: p.ParseServiceToken,
-		token.Rpc:     p.ParseRpcToken,
-		token.Enum:    p.ParseEnumToken,
-		token.Message: p.ParseMessageToken,
 	}
 
 	return p
@@ -35,13 +23,53 @@ func (p *ProtoParser) ParseDocument() []*symbols.Symbol {
 	symbols := make([]*symbols.Symbol, 0, 10)
 
 	for !p.EOF() {
+		p.skipWhiteSpaces()
 		word, _ := p.extractKeyword() // TODO: check error
 
-		parsed, err := p.tokens[word]()
-		if err != nil {
-			panic(err) // TODO: not panic here!
+		switch word {
+		case token.Syntax:
+			p, err := p.ParseSyntaxToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
+		case token.Package:
+			p, err := p.ParsePackageToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
+		case token.Import:
+			p, err := p.ParseImportToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
+		case token.Option:
+			p, err := p.ParseOptionToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
+		case token.Service:
+			p, err := p.ParseServiceToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p...)
+		case token.Enum:
+			p, err := p.ParseEnumToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
+		case token.Message:
+			p, err := p.ParseEnumToken()
+			if err != nil {
+				panic(err)
+			}
+			symbols = append(symbols, p)
 		}
-		symbols = append(symbols, parsed)
 	}
 	return symbols
 }

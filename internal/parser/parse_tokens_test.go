@@ -43,14 +43,16 @@ func TestParseTokens_Syntax(t *testing.T) {
 			`syntax = "proto3;`,
 			`syntax = "proto3` + "\n" + `;`,
 		}
-		
-		for _, in := range input {
-			parser := NewProtoParser(source.NewStringSource(in))
-			parser.extractKeyword()
-			result, err := parser.ParseSyntaxToken()
 
-			assert.Nil(t, result)
-			assert.Error(t, err)
+		for _, in := range input {
+			t.Run(in, func(t *testing.T) {
+				parser := NewProtoParser(source.NewStringSource(in))
+				parser.extractKeyword()
+				result, err := parser.ParseSyntaxToken()
+
+				assert.Nil(t, result)
+				assert.Error(t, err)
+			})
 		}
 	})
 }
@@ -82,14 +84,16 @@ func TestParseTokens_Package(t *testing.T) {
 			"packageexample",
 			"package; example",
 		}
-		
-		for _, in := range input {
-			parser := NewProtoParser(source.NewStringSource(in))
-			parser.extractKeyword()
-			result, err := parser.ParsePackageToken()
 
-			assert.Nil(t, result)
-			assert.Error(t, err)
+		for _, in := range input {
+			t.Run(in, func(t *testing.T) {
+				parser := NewProtoParser(source.NewStringSource(in))
+				parser.extractKeyword()
+				result, err := parser.ParsePackageToken()
+
+				assert.Nil(t, result)
+				assert.Error(t, err)
+			})
 		}
 	})
 }
@@ -120,14 +124,16 @@ func TestParseTokens_Import(t *testing.T) {
 			`import "google/protobuf/timestamp.proto;`,
 			`import google/protobuf/timestamp.proto";`,
 		}
-		
-		for _, in := range input {
-			parser := NewProtoParser(source.NewStringSource(in))
-			parser.extractKeyword()
-			result, err := parser.ParseImportToken()
 
-			assert.Nil(t, result)
-			assert.Error(t, err)
+		for _, in := range input {
+			t.Run(in, func(t *testing.T) {
+				parser := NewProtoParser(source.NewStringSource(in))
+				parser.extractKeyword()
+				result, err := parser.ParseImportToken()
+
+				assert.Nil(t, result)
+				assert.Error(t, err)
+			})
 		}
 	})
 }
@@ -156,15 +162,46 @@ func TestParseTokens_Option(t *testing.T) {
 	t.Run("With Errors", func(t *testing.T) {
 		input := []string{
 			`option go_package = "gitlab.ozon.ru/example/api/example;example"`,
+			`option go_package = "gitlab.ozon.ru/example/api/example;example;`,
+			`option go_package = gitlab.ozon.ru/example/api/example;example";`,
+			`option go_package  "gitlab.ozon.ru/example/api/example;example";`,
+			// `optiongo_package = "gitlab.ozon.ru/example/api/example;example";`, // found bug: type=optiongo, name=_package (ignore space absense)
 		}
-		
+
+		for _, in := range input {
+			t.Run(in, func(t *testing.T) {
+				parser := NewProtoParser(source.NewStringSource(in))
+				parser.extractKeyword()
+				result, err := parser.ParseOptionToken()
+
+				assert.Nil(t, result)
+				assert.Error(t, err)
+			})
+		}
+	})
+}
+
+func TestParseTokens_Service(t *testing.T) {
+	t.Run("Normal, w/o rpcs inside", func(t *testing.T) {
+		input := []string{
+			`service Example {}`,
+			withSpaces("service", "Example", "{", "}"),
+		}
 		for _, in := range input {
 			parser := NewProtoParser(source.NewStringSource(in))
 			parser.extractKeyword()
-			result, err := parser.ParseOptionToken()
+			result, err := parser.ParseServiceToken()
 
-			assert.Nil(t, result)
-			assert.Error(t, err)
+			assert.Equal(t, 1, len(result))
+
+			assert.Equal(t, "service", result[0].Type())
+			assert.Equal(t, "Example", result[0].Name())
+			assert.NoError(t, err)
 		}
 	})
+}
+
+// rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+func TestParseTokens_Rpc(t *testing.T) {
+	
 }

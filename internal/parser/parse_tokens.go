@@ -37,7 +37,7 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Package)
-	
+
 	p.skipWhiteSpaces()
 
 	s.SetLine(p.LineNumber())
@@ -114,14 +114,42 @@ func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
 	return s, nil
 }
 
-func (p *ProtoParser) ParseServiceToken() (*symbols.Symbol, error) {
+// service Example {
+//   rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+// }
+func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
 
-	if err := p.peekSemicolon(); err != nil {
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractName()
+	if err != nil {
 		return nil, err
 	}
-	return s, nil
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	p.skipWhiteSpaces()
+
+	if err := p.peekOpenCurlyBrace(); err != nil {
+		return nil, err
+	}
+
+	p.skipWhiteSpaces()
+	rpcs := make([]*symbols.Symbol, 0, 4)
+	rpcs = append(rpcs, s)
+	for !p.Test('}') {
+		r, _ := p.ParseRpcToken() // TODO: check error
+		rpcs = append(rpcs, r)
+		p.skipWhiteSpaces()
+	}
+
+	return rpcs, nil
 }
 
 func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {

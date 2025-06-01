@@ -81,6 +81,14 @@ func (p *ProtoParser) peekEquals() error {
 	return p.peekSymbol('=')
 }
 
+func (p *ProtoParser) peekOpenCurlyBrace() error {
+	return p.peekSymbol('{')
+}
+
+func (p *ProtoParser) peekCloseCurlyBrace() error {
+	return p.peekSymbol('}')
+}
+
 // TODO: maybe we don't need it?
 func (p *ProtoParser) skipUntilNextLine() {
 	for !p.EOF() {

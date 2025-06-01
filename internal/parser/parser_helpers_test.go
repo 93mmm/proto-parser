@@ -45,6 +45,16 @@ func TestParser_ExtractKeyword(t *testing.T) {
 		assert.Equal(t, expected, actual)
 		assert.Error(t, err)
 	})
+
+	t.Run("Not keyword", func(t *testing.T) { // TODO: edit 
+		input := "hello_world"
+		expected := "hello"
+		parser := NewProtoParser(source.NewStringSource(input))
+
+		actual, err := parser.extractKeyword()
+		assert.Equal(t, expected, actual)
+		assert.NoError(t, err)
+	})
 }
 
 func TestParser_ExtractQuotedString(t *testing.T) {
