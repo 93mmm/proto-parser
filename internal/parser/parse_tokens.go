@@ -16,16 +16,16 @@ func (p *protoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractQuotedString()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
@@ -40,16 +40,16 @@ func (p *protoParser) ParsePackageToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
@@ -64,16 +64,16 @@ func (p *protoParser) ParseImportToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractQuotedString()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
@@ -88,16 +88,16 @@ func (p *protoParser) ParseOptionToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	if err := p.peekSymbol('='); err != nil {
 		return nil, err
@@ -123,16 +123,16 @@ func (p *protoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	p.skipWhiteSpaces()
 
@@ -168,16 +168,16 @@ func (p *protoParser) ParseRpcToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	if _, err := p.extractNameBetweenParentheses(); err != nil {
 		return nil, err
@@ -194,27 +194,27 @@ func (p *protoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	return s, nil
 }
 
-// enum ExampleEnum {
-//   ONE = 0;
-//   TWO = 1;
-//   THREE = 2;
-// }
+//	enum ExampleEnum {
+//	  ONE = 0;
+//	  TWO = 1;
+//	  THREE = 2;
+//	}
 func (p *protoParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	p.skipCurlyBraces()
 	return s, nil
@@ -227,16 +227,16 @@ func (p *protoParser) ParseMessageToken() (*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	s.SetLine(p.LineNumber())
-	s.SetStartChar(p.CharNumber())
+	s.SetLine(p.LineNumber()).
+		SetStartChar(p.CharNumber())
 
 	name, err := p.extractName()
 	if err != nil {
 		return nil, err
 	}
 
-	s.SetName(name)
-	s.SetEndChar(p.CharNumber())
+	s.SetName(name).
+		SetEndChar(p.CharNumber())
 
 	p.skipCurlyBraces()
 	return s, nil
