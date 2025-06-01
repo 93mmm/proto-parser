@@ -5,29 +5,33 @@ import (
 	"os"
 )
 
-var helpMessage = 
-`Error: no input arguments provided.
+var (
+	errorMessage = "Error: no input arguments provided.\n"
 
-Usage:
-  protosym <input-files>...
+	helpMessage = `Usage:
+  protosym <input-file>
 
 Example:
-  protosym input.proto file.proto
+  protosym input.proto
 
 Options:
   --help, -h     Show this help message
 
 Please provide at least one input file to process.`
+)
 
-func DocPaths() []string {
+// I used to think about external library, but I think it is overhead for this tiny app
+func DocPathOrDie() string {
 	if len(os.Args) == 1 {
+		fmt.Println(errorMessage + helpMessage)
+		os.Exit(1)
+	}
+
+	path := os.Args[1]
+	if path == "--help" || path == "-h" {
 		fmt.Println(helpMessage)
 		os.Exit(1)
 	}
-	switch os.Args[1] {
-	case "--help", "-h":
-		fmt.Println(helpMessage)
-		os.Exit(1)
-	}
-	return os.Args[1:]
+
+	return path
 }
