@@ -24,7 +24,7 @@ func NewFileSource(filename string) (*fileSource, error) {
 
 	reader := bufio.NewReader(file)
 	return &fileSource{
-		src: reader,
+		src:  reader,
 		file: file,
 	}, nil
 }
@@ -34,7 +34,7 @@ func (s *fileSource) Next() (rune, error) {
 	if err != nil {
 		return EOF, err
 	}
-	return r, nil 
+	return r, nil
 }
 
 func (s *fileSource) Close() error {

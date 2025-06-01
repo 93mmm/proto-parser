@@ -1,25 +1,28 @@
 package parser
 
 import (
-	base "github.com/93mmm/proto-parser/internal/baseparser"
 	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 	"github.com/93mmm/proto-parser/internal/token"
 )
 
-type ProtoParser struct {
-	base.BaseParser
+type Parser interface {
+	ParseDocument() []*symbols.Symbol
 }
 
-func NewProtoParser(src source.Source) *ProtoParser {
-	p := &ProtoParser{
-		BaseParser: *base.NewBaseParser(src),
+type parser struct {
+	protoParser
+}
+
+var _ Parser = (*parser)(nil)
+
+func NewParser(src source.Source) Parser {
+	return &parser{
+		protoParser: *newProtoParser(src),
 	}
-
-	return p
 }
 
-func (p *ProtoParser) ParseDocument() []*symbols.Symbol {
+func (p *parser) ParseDocument() []*symbols.Symbol {
 	symbols := make([]*symbols.Symbol, 0, 10)
 
 	for !p.EOF() {

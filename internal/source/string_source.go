@@ -23,4 +23,3 @@ func (s *stringSource) Next() (rune, error) {
 	s.pos++
 	return r, nil
 }
-

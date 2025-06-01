@@ -19,9 +19,8 @@ func (e *ParserError) Error() string {
 
 func NewParserError(msg string, line int, char int) *ParserError {
 	return &ParserError{
-		message: msg,
+		message:    msg,
 		lineNumber: line,
 		charNumber: char,
 	}
 }
-

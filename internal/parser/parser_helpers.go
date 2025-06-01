@@ -4,7 +4,7 @@ import "fmt"
 
 // TODO: DRY principle, maybe fix it?
 
-func (p *ProtoParser) extractKeyword() (string, error) {
+func (p *protoParser) extractKeyword() (string, error) {
 	p.skipWhiteSpaces()
 
 	keyword := make([]rune, 0, 30)
@@ -21,7 +21,7 @@ func (p *ProtoParser) extractKeyword() (string, error) {
 	return string(keyword), nil
 }
 
-func (p *ProtoParser) extractName() (string, error) {
+func (p *protoParser) extractName() (string, error) {
 	name := make([]rune, 0, 30)
 	for !p.EOF() {
 		if p.TestName() {
@@ -36,7 +36,7 @@ func (p *ProtoParser) extractName() (string, error) {
 	return string(name), nil
 }
 
-func (p *ProtoParser) extractQuotedString() (string, error) {
+func (p *protoParser) extractQuotedString() (string, error) {
 	if !p.Peek('"') {
 		return "", NewParserError("Quote expected", p.LineNumber(), p.CharNumber())
 	}
@@ -55,7 +55,7 @@ func (p *ProtoParser) extractQuotedString() (string, error) {
 	return "", NewParserError("EOF reached, nothing to extract", p.LineNumber(), p.CharNumber())
 }
 
-func (p *ProtoParser) extractNameBetweenParentheses() (string, error) {
+func (p *protoParser) extractNameBetweenParentheses() (string, error) {
 	p.skipWhiteSpaces()
 	if err := p.peekOpenParenthesis(); err != nil {
 		return "", err
@@ -73,7 +73,7 @@ func (p *ProtoParser) extractNameBetweenParentheses() (string, error) {
 	return name, nil
 }
 
-func (p *ProtoParser) skipWhiteSpaces() {
+func (p *protoParser) skipWhiteSpaces() {
 	for !p.EOF() {
 		if p.TestWhiteSpace() {
 			p.Next()
@@ -83,7 +83,7 @@ func (p *ProtoParser) skipWhiteSpaces() {
 	}
 }
 
-func (p *ProtoParser) peekSymbol(symbol rune) error {
+func (p *protoParser) peekSymbol(symbol rune) error {
 	p.skipWhiteSpaces()
 	if !p.Peek(symbol) {
 		return NewParserError(fmt.Sprintf("Expected %c found nothing", symbol), p.LineNumber(), p.CharNumber())
@@ -91,31 +91,31 @@ func (p *ProtoParser) peekSymbol(symbol rune) error {
 	return nil
 }
 
-func (p *ProtoParser) peekSemicolon() error {
+func (p *protoParser) peekSemicolon() error {
 	return p.peekSymbol(';')
 }
 
-func (p *ProtoParser) peekEquals() error {
+func (p *protoParser) peekEquals() error {
 	return p.peekSymbol('=')
 }
 
-func (p *ProtoParser) peekOpenBrace() error {
+func (p *protoParser) peekOpenBrace() error {
 	return p.peekSymbol('{')
 }
 
-func (p *ProtoParser) peekCloseBrace() error {
+func (p *protoParser) peekCloseBrace() error {
 	return p.peekSymbol('}')
 }
 
-func (p *ProtoParser) peekOpenParenthesis() error {
+func (p *protoParser) peekOpenParenthesis() error {
 	return p.peekSymbol('(')
 }
 
-func (p *ProtoParser) peekCloseParenthesis() error {
+func (p *protoParser) peekCloseParenthesis() error {
 	return p.peekSymbol(')')
 }
 
-func (p *ProtoParser) skipUntilMatch(symbol rune) {
+func (p *protoParser) skipUntilMatch(symbol rune) {
 	for !p.EOF() {
 		if !p.Test(symbol) {
 			p.Next()

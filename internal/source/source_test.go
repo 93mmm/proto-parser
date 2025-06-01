@@ -33,7 +33,7 @@ func TestFileSource_ReadRunes(t *testing.T) {
  * #################
  * utils for testing
  * #################
-*/
+ */
 
 func createTmpFile(t *testing.T, filename string, data string) string {
 	t.Helper()

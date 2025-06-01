@@ -6,7 +6,7 @@ import (
 )
 
 // syntax = "proto3";
-func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Syntax)
 
@@ -34,7 +34,7 @@ func (p *ProtoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 }
 
 // package example;
-func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Package)
 
@@ -58,7 +58,7 @@ func (p *ProtoParser) ParsePackageToken() (*symbols.Symbol, error) {
 }
 
 // import "google/protobuf/timestamp.proto";
-func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseImportToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Import)
 
@@ -82,7 +82,7 @@ func (p *ProtoParser) ParseImportToken() (*symbols.Symbol, error) {
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
-func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseOptionToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Option)
 
@@ -117,7 +117,7 @@ func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
 //	service Example {
 //	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 //	}
-func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
+func (p *protoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
 
@@ -158,7 +158,7 @@ func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 }
 
 // rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Rpc)
 
@@ -195,7 +195,7 @@ func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
 //   TWO = 1;
 //   THREE = 2;
 // }
-func (p *ProtoParser) ParseEnumToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
 
@@ -218,7 +218,7 @@ func (p *ProtoParser) ParseEnumToken() (*symbols.Symbol, error) {
 }
 
 // message ExampleRPCResponse {}
-func (p *ProtoParser) ParseMessageToken() (*symbols.Symbol, error) {
+func (p *protoParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
 
