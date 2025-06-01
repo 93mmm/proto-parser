@@ -2,8 +2,11 @@ package main
 
 import (
 	"fmt"
+
+	"github.com/93mmm/proto-parser/internal/flags"
 )
 
 func main() {
-	fmt.Println("Hello world")
+	args := flags.ParseArguments()
+	fmt.Println(args)
 }
