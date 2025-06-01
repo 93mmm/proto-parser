@@ -57,7 +57,7 @@ func (p *protoParser) extractQuotedString() (string, error) {
 
 func (p *protoParser) extractNameBetweenParentheses() (string, error) {
 	p.skipWhiteSpaces()
-	if err := p.peekOpenParenthesis(); err != nil {
+	if err := p.peekSymbol('('); err != nil {
 		return "", err
 	}
 	p.skipWhiteSpaces()
@@ -66,7 +66,7 @@ func (p *protoParser) extractNameBetweenParentheses() (string, error) {
 		return "", err
 	}
 	p.skipWhiteSpaces()
-	if err := p.peekCloseParenthesis(); err != nil {
+	if err := p.peekSymbol(')'); err != nil {
 		return "", err
 	}
 
@@ -89,30 +89,6 @@ func (p *protoParser) peekSymbol(symbol rune) error {
 		return NewParserError(fmt.Sprintf("Expected %c found nothing", symbol), p.LineNumber(), p.CharNumber())
 	}
 	return nil
-}
-
-func (p *protoParser) peekSemicolon() error {
-	return p.peekSymbol(';')
-}
-
-func (p *protoParser) peekEquals() error {
-	return p.peekSymbol('=')
-}
-
-func (p *protoParser) peekOpenBrace() error {
-	return p.peekSymbol('{')
-}
-
-func (p *protoParser) peekCloseBrace() error {
-	return p.peekSymbol('}')
-}
-
-func (p *protoParser) peekOpenParenthesis() error {
-	return p.peekSymbol('(')
-}
-
-func (p *protoParser) peekCloseParenthesis() error {
-	return p.peekSymbol(')')
 }
 
 func (p *protoParser) skipUntilMatch(symbol rune) {

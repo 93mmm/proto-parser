@@ -10,7 +10,7 @@ func (p *protoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Syntax)
 
-	if err := p.peekEquals(); err != nil {
+	if err := p.peekSymbol('='); err != nil {
 		return nil, err
 	}
 
@@ -27,7 +27,7 @@ func (p *protoParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	if err := p.peekSemicolon(); err != nil {
+	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -51,7 +51,7 @@ func (p *protoParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	if err := p.peekSemicolon(); err != nil {
+	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -75,7 +75,7 @@ func (p *protoParser) ParseImportToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	if err := p.peekSemicolon(); err != nil {
+	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -99,7 +99,7 @@ func (p *protoParser) ParseOptionToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	if err := p.peekEquals(); err != nil {
+	if err := p.peekSymbol('='); err != nil {
 		return nil, err
 	}
 
@@ -108,7 +108,7 @@ func (p *protoParser) ParseOptionToken() (*symbols.Symbol, error) {
 		return nil, err
 	}
 
-	if err := p.peekSemicolon(); err != nil {
+	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
 	}
 	return s, nil
@@ -136,7 +136,7 @@ func (p *protoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 
 	p.skipWhiteSpaces()
 
-	if err := p.peekOpenBrace(); err != nil {
+	if err := p.peekSymbol('{'); err != nil {
 		return nil, err
 	}
 
@@ -184,7 +184,7 @@ func (p *protoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	}
 
 	p.skipUntilMatch(';')
-	if err := p.peekSemicolon(); err != nil {
+	if err := p.peekSymbol(';'); err != nil {
 		return nil, err
 	}
 	return s, nil
