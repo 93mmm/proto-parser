@@ -3,14 +3,13 @@ package parser
 import (
 	"testing"
 
-	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/stretchr/testify/assert"
 )
 
 func TestParser_ExtractKeyword(t *testing.T) {
 	t.Run("Regular string", func(t *testing.T) {
 		input := "one two three\n\t\n four five!"
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 		expected := []string{
 			"one", "two", "three", "four", "five",
 		}
@@ -29,7 +28,7 @@ func TestParser_ExtractKeyword(t *testing.T) {
 	t.Run("Empty string", func(t *testing.T) {
 		input := ""
 		expected := ""
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractKeyword()
 		assert.Equal(t, expected, actual)
@@ -39,7 +38,7 @@ func TestParser_ExtractKeyword(t *testing.T) {
 	t.Run("Not keyword", func(t *testing.T) {
 		input := ",hello"
 		expected := ""
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractKeyword()
 		assert.Equal(t, expected, actual)
@@ -49,7 +48,7 @@ func TestParser_ExtractKeyword(t *testing.T) {
 	t.Run("Not keyword", func(t *testing.T) { // TODO: edit
 		input := "hello_world"
 		expected := "hello"
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractKeyword()
 		assert.Equal(t, expected, actual)
@@ -61,7 +60,7 @@ func TestParser_ExtractQuotedString(t *testing.T) {
 	t.Run("Normal quotes", func(t *testing.T) {
 		input := "\" one \""
 		expected := " one "
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractQuotedString()
 		assert.Equal(t, expected, actual)
@@ -71,7 +70,7 @@ func TestParser_ExtractQuotedString(t *testing.T) {
 	t.Run("Quote w/o pair", func(t *testing.T) {
 		input := "\" one "
 		expected := ""
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractQuotedString()
 		assert.Equal(t, expected, actual)
@@ -81,7 +80,7 @@ func TestParser_ExtractQuotedString(t *testing.T) {
 	t.Run("Quote with pair on next string", func(t *testing.T) {
 		input := "\" one \n\""
 		expected := ""
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractQuotedString()
 		assert.Equal(t, expected, actual)
@@ -93,7 +92,7 @@ func TestParser_ExtractName(t *testing.T) {
 	t.Run("Normal names", func(t *testing.T) {
 		input := "One_Two_Three"
 		expected := "One_Two_Three"
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractName()
 		assert.Equal(t, expected, actual)
@@ -105,7 +104,7 @@ func TestParser_ExtractNameBetweenParantheses(t *testing.T) {
 	t.Run("Normal names", func(t *testing.T) {
 		input := "(One_Two_Three)"
 		expected := "One_Two_Three"
-		parser := newProtoParser(source.NewStringSource(input))
+		parser := newTestProtoParser(input)
 
 		actual, err := parser.extractNameBetweenParentheses()
 		assert.Equal(t, expected, actual)
@@ -119,7 +118,7 @@ func TestParser_ExtractNameBetweenParantheses(t *testing.T) {
 
 func TestParser_SkipUntilNextLine(t *testing.T) {
 	input := "one two : three"
-	parser := newProtoParser(source.NewStringSource(input))
+	parser := newTestProtoParser(input)
 
 	parser.extractKeyword()
 	parser.skipUntilMatch(':')
@@ -135,7 +134,7 @@ func TestParser_SkipUntilNextLine(t *testing.T) {
 
 func TestParser_SkipCurlyBraces(t *testing.T) {
 	input := "{{{{{{{{{{{{{{}}}}}}}}}}}}}}"
-	parser := newProtoParser(source.NewStringSource(input))
+	parser := newTestProtoParser(input)
 	parser.skipCurlyBraces()
 
 	t.Log(parser.CharNumber())

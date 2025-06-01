@@ -6,12 +6,18 @@ import (
 )
 
 type protoParser struct {
-	base.BaseParser
+	*base.BaseParser
 }
 
-func newProtoParser(src source.Source) *protoParser {
-	p := &protoParser{
-		BaseParser: *base.NewBaseParser(src),
+func NewProtoParser(bp *base.BaseParser) *protoParser {
+	return &protoParser{
+		BaseParser: bp,
 	}
-	return p
+
+}
+
+func newTestProtoParser(input string) *protoParser {
+	src := source.NewStringSource(input)
+	bp := base.NewBaseParser(src)
+	return NewProtoParser(bp)
 }

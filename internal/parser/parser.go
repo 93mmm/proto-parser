@@ -1,7 +1,6 @@
 package parser
 
 import (
-	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 	"github.com/93mmm/proto-parser/internal/token"
 )
@@ -11,14 +10,16 @@ type Parser interface {
 }
 
 type parser struct {
-	protoParser
+	*protoParser
 }
 
-var _ Parser = (*parser)(nil)
+type Source interface {
+	Next() (rune, error)
+}
 
-func NewParser(src source.Source) Parser {
+func NewParser(pp *protoParser) Parser {
 	return &parser{
-		protoParser: *newProtoParser(src),
+		protoParser: pp,
 	}
 }
 

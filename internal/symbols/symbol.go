@@ -10,16 +10,6 @@ type Symbol struct {
 	endChar   int
 }
 
-func NewSymbol(name string, kind string, line int, startChar int, endChar int) *Symbol {
-	return &Symbol{
-		name:      name,
-		kind:      kind,
-		line:      line,
-		startChar: startChar,
-		endChar:   endChar,
-	}
-}
-
 func (s *Symbol) String() string {
 	return fmt.Sprintf(
 		"%v %v %v:%v-%v",

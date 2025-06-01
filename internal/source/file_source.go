@@ -2,7 +2,6 @@ package source
 
 import (
 	"bufio"
-	"io"
 	"os"
 )
 
@@ -12,10 +11,6 @@ type fileSource struct {
 	pos  int
 }
 
-var _ Source = (*fileSource)(nil)
-var _ io.Closer = (*fileSource)(nil)
-
-// After use of source you need to release resources by closing file
 func NewFileSource(filename string) (*fileSource, error) {
 	file, err := os.Open(filename)
 	if err != nil {

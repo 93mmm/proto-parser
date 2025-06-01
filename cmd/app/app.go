@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 
+	base "github.com/93mmm/proto-parser/internal/baseparser"
 	"github.com/93mmm/proto-parser/internal/parser"
 	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
@@ -23,13 +24,14 @@ func filterPrint(el *symbols.Symbol) {
 }
 
 func RunParser(document string) error {
-	file, err := source.NewFileSource(document)
+	src, err := source.NewFileSource(document)
 	if err != nil {
 		return err
 	}
-	defer file.Close()
-
-	parsed, err := parser.NewParser(file).ParseDocument()
+	defer src.Close()
+	bp := base.NewBaseParser(src)
+	pp := parser.NewProtoParser(bp)
+	parsed, err := parser.NewParser(pp).ParseDocument()
 	if err != nil {
 		return err
 	}
