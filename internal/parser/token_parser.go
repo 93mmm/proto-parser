@@ -27,12 +27,12 @@ func newTestTokenParser(in string) *tokenParser {
 }
 
 // syntax = "proto3";
-func (p *tokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseSyntaxToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Syntax)
 
 	if err := p.PeekSymbol('='); err != nil {
-		return nil, err
+		return err
 	}
 
 	p.SkipWhiteSpaces()
@@ -42,20 +42,21 @@ func (p *tokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractQuotedString()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return nil, err
+		return err
 	}
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 // package example;
-func (p *tokenParser) ParsePackageToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParsePackageToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Package)
 
@@ -66,20 +67,21 @@ func (p *tokenParser) ParsePackageToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return nil, err
+		return err
 	}
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 // import "google/protobuf/timestamp.proto";
-func (p *tokenParser) ParseImportToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseImportToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Import)
 
@@ -90,20 +92,21 @@ func (p *tokenParser) ParseImportToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractQuotedString()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return nil, err
+		return err
 	}
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
-func (p *tokenParser) ParseOptionToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseOptionToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Option)
 
@@ -114,31 +117,32 @@ func (p *tokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	if err := p.PeekSymbol('='); err != nil {
-		return nil, err
+		return err
 	}
 
 	p.SkipWhiteSpaces()
 	if _, err := p.ExtractQuotedString(); err != nil {
-		return nil, err
+		return err
 	}
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return nil, err
+		return err
 	}
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 //	service Example {
 //	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 //	}
-func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
+func (p *tokenParser) ParseServiceToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
 
@@ -149,7 +153,7 @@ func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
@@ -158,32 +162,29 @@ func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	if err := p.PeekSymbol('{'); err != nil {
-		return nil, err
+		return err
 	}
 
 	p.SkipWhiteSpaces()
-	rpcs := make([]*symbols.Symbol, 0, 4)
-	rpcs = append(rpcs, s)
-
+	collector.Add(s)
 	for !p.Test('}') && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
-			return nil, errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
+			return errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
 		}
-		r, err := p.ParseRpcToken()
+		err := p.ParseRpcToken(collector)
 		if err != nil {
-			return nil, err
+			return err
 		}
-		rpcs = append(rpcs, r)
 		p.SkipWhiteSpaces()
 	}
 	p.Next()
 
-	return rpcs, nil
+	return nil
 }
 
 // rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseRpcToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Rpc)
 
@@ -194,25 +195,26 @@ func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
-		return nil, err
+		return err
 	}
 	p.ExtractKeyword()
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
-		return nil, err
+		return err
 	}
 
 	p.SkipUntilMatch(';')
 	if err := p.PeekSymbol(';'); err != nil {
-		return nil, err
+		return err
 	}
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 //	enum ExampleEnum {
@@ -220,7 +222,7 @@ func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 //	  TWO = 1;
 //	  THREE = 2;
 //	}
-func (p *tokenParser) ParseEnumToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseEnumToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
 
@@ -231,18 +233,19 @@ func (p *tokenParser) ParseEnumToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	p.SkipCurlyBraces()
-	return s, nil
+	collector.Add(s)
+	return nil
 }
 
 // message ExampleRPCResponse {}
-func (p *tokenParser) ParseMessageToken() (*symbols.Symbol, error) {
+func (p *tokenParser) ParseMessageToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
 
@@ -253,12 +256,13 @@ func (p *tokenParser) ParseMessageToken() (*symbols.Symbol, error) {
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return nil, err
+		return err
 	}
 
 	s.SetName(name).
 		SetEndChar(p.CharNumber())
 
 	p.SkipCurlyBraces()
-	return s, nil
+	collector.Add(s)
+	return nil
 }

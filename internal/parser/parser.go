@@ -24,7 +24,7 @@ func NewParser(pp *tokenParser) Parser {
 }
 
 func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
-	symbols := make([]*symbols.Symbol, 0, 10)
+	syms := symbols.NewCollector(10)
 
 	for !p.EOF() {
 		word, err := p.ExtractKeyword()
@@ -34,49 +34,42 @@ func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 
 		switch word {
 		case token.Syntax:
-			p, err := p.ParseSyntaxToken()
+			err := p.ParseSyntaxToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		case token.Package:
-			p, err := p.ParsePackageToken()
+			err := p.ParsePackageToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		case token.Import:
-			p, err := p.ParseImportToken()
+			err := p.ParseImportToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		case token.Option:
-			p, err := p.ParseOptionToken()
+			err := p.ParseOptionToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		case token.Service:
-			p, err := p.ParseServiceToken()
+			err := p.ParseServiceToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p...)
 		case token.Enum:
-			p, err := p.ParseEnumToken()
+			err := p.ParseEnumToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		case token.Message:
-			p, err := p.ParseMessageToken()
+			err := p.ParseMessageToken(syms)
 			if err != nil {
 				return nil, err
 			}
-			symbols = append(symbols, p)
 		}
 		p.SkipWhiteSpaces()
 	}
-	return symbols, nil
+	return syms.All(), nil
 }
