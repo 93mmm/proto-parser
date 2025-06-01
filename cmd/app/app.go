@@ -4,6 +4,7 @@ import (
 	"fmt"
 
 	base "github.com/93mmm/proto-parser/internal/baseparser"
+	"github.com/93mmm/proto-parser/internal/lexer"
 	"github.com/93mmm/proto-parser/internal/parser"
 	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
@@ -30,7 +31,8 @@ func RunParser(document string) error {
 	}
 	defer src.Close()
 	bp := base.NewBaseParser(src)
-	pp := parser.NewProtoParser(bp)
+	l := lexer.NewLexer(bp)
+	pp := parser.NewProtoParser(l)
 	parsed, err := parser.NewParser(pp).ParseDocument()
 	if err != nil {
 		return err

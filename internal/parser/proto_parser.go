@@ -2,22 +2,23 @@ package parser
 
 import (
 	base "github.com/93mmm/proto-parser/internal/baseparser"
+	"github.com/93mmm/proto-parser/internal/lexer"
 	"github.com/93mmm/proto-parser/internal/source"
 )
 
 type protoParser struct {
-	*base.BaseParser
+	*lexer.Lexer
 }
 
-func NewProtoParser(bp *base.BaseParser) *protoParser {
+func NewProtoParser(l *lexer.Lexer) *protoParser {
 	return &protoParser{
-		BaseParser: bp,
+		Lexer: l,
 	}
-
 }
 
-func newTestProtoParser(input string) *protoParser {
-	src := source.NewStringSource(input)
+func newTestProtoParser(in string) *protoParser {
+	src := source.NewStringSource(in)
 	bp := base.NewBaseParser(src)
-	return NewProtoParser(bp)
+	l := lexer.NewLexer(bp)
+	return NewProtoParser(l)
 }

@@ -27,7 +27,7 @@ func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 	symbols := make([]*symbols.Symbol, 0, 10)
 
 	for !p.EOF() {
-		word, err := p.extractKeyword()
+		word, err := p.ExtractKeyword()
 		if err != nil {
 			return nil, err
 		}
@@ -76,7 +76,7 @@ func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 			}
 			symbols = append(symbols, p)
 		}
-		p.skipWhiteSpaces()
+		p.SkipWhiteSpaces()
 	}
 	return symbols, nil
 }
