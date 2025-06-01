@@ -10,16 +10,16 @@ type Parser interface {
 }
 
 type parser struct {
-	*protoParser
+	*tokenParser
 }
 
 type Source interface {
 	Next() (rune, error)
 }
 
-func NewParser(pp *protoParser) Parser {
+func NewParser(pp *tokenParser) Parser {
 	return &parser{
-		protoParser: pp,
+		tokenParser: pp,
 	}
 }
 

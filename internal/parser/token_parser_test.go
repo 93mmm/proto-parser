@@ -20,7 +20,7 @@ func TestParseTokens_Syntax(t *testing.T) {
 			withSpaces("syntax", "=", `"proto3"`, ";"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseSyntaxToken()
 
@@ -46,7 +46,7 @@ func TestParseTokens_Syntax(t *testing.T) {
 
 		for _, in := range input {
 			t.Run(in, func(t *testing.T) {
-				parser := newTestProtoParser(in)
+				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
 				result, err := parser.ParseSyntaxToken()
 
@@ -64,7 +64,7 @@ func TestParseTokens_Package(t *testing.T) {
 			withSpaces("package", "example", ";"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParsePackageToken()
 
@@ -88,7 +88,7 @@ func TestParseTokens_Package(t *testing.T) {
 
 		for _, in := range input {
 			t.Run(in, func(t *testing.T) {
-				parser := newTestProtoParser(in)
+				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
 				result, err := parser.ParsePackageToken()
 
@@ -106,7 +106,7 @@ func TestParseTokens_Import(t *testing.T) {
 			withSpaces("import", `"google/protobuf/timestamp.proto"`, ";"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseImportToken()
 
@@ -129,7 +129,7 @@ func TestParseTokens_Import(t *testing.T) {
 
 		for _, in := range input {
 			t.Run(in, func(t *testing.T) {
-				parser := newTestProtoParser(in)
+				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
 				result, err := parser.ParseImportToken()
 
@@ -147,7 +147,7 @@ func TestParseTokens_Option(t *testing.T) {
 			withSpaces("option", "go_package", "=", `"gitlab.ozon.ru/example/api/example;example"`, ";"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseOptionToken()
 
@@ -173,7 +173,7 @@ func TestParseTokens_Option(t *testing.T) {
 
 		for _, in := range input {
 			t.Run(in, func(t *testing.T) {
-				parser := newTestProtoParser(in)
+				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
 				result, err := parser.ParseOptionToken()
 
@@ -191,7 +191,7 @@ func TestParseTokens_Service(t *testing.T) {
 			withSpaces("service", "Example", "{", "}"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseServiceToken()
 
@@ -209,7 +209,7 @@ func TestParseTokens_Service(t *testing.T) {
 			rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 			rpc ExampleRPC1(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 		}`
-		parser := newTestProtoParser(input)
+		parser := newTestTokenParser(input)
 		parser.ExtractKeyword()
 		result, err := parser.ParseServiceToken()
 
@@ -235,7 +235,7 @@ func TestParseTokens_Rpc(t *testing.T) {
 			withSpaces("rpc", "ExampleRPC", "(", "ExampleRPCRequest", ")", "returns", "(", "ExampleRPCResponse", ")", "{", "}", ";"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseRpcToken()
 
@@ -262,7 +262,7 @@ func TestParseTokens_Enum(t *testing.T) {
 			withSpaces("enum", "ExampleEnum", "{", "}"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseEnumToken()
 
@@ -287,7 +287,7 @@ func TestParseTokens_Message(t *testing.T) {
 			withSpaces("message", "ExampleRPCResponse", "{", "}"),
 		}
 		for _, in := range input {
-			parser := newTestProtoParser(in)
+			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
 			result, err := parser.ParseMessageToken()
 

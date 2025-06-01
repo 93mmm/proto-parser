@@ -32,7 +32,7 @@ func RunParser(document string) error {
 	defer src.Close()
 	bp := base.NewBaseParser(src)
 	l := lexer.NewLexer(bp)
-	pp := parser.NewProtoParser(l)
+	pp := parser.NewTokenParser(l)
 	parsed, err := parser.NewParser(pp).ParseDocument()
 	if err != nil {
 		return err
