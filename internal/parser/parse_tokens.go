@@ -148,7 +148,7 @@ func (p *protoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	for !p.Test('}') && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
-			return nil, errors.NewParserError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
+			return nil, errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
 		}
 		r, err := p.ParseRpcToken()
 		if err != nil {

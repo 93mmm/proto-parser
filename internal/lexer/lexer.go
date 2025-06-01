@@ -34,7 +34,7 @@ func (p *Lexer) ExtractKeyword() (string, error) {
 		}
 	}
 	if len(keyword) == 0 {
-		return "", errors.NewParserError(p.LineNumber(), p.CharNumber(), "Expected keyword, found %c", p.CurrentChar())
+		return "", errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Expected keyword, found %c", p.CurrentChar())
 	}
 	return string(keyword), nil
 }
@@ -49,14 +49,14 @@ func (p *Lexer) ExtractName() (string, error) {
 		}
 	}
 	if len(name) == 0 {
-		return "", errors.NewParserError(p.LineNumber(), p.CharNumber(), "Expected name, found %c", p.CurrentChar())
+		return "", errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Expected name, found %c", p.CurrentChar())
 	}
 	return string(name), nil
 }
 
 func (p *Lexer) ExtractQuotedString() (string, error) {
 	if !p.Peek('"') {
-		return "", errors.NewParserError(p.LineNumber(), p.CharNumber(), "Quote expected, found %c", p.CurrentChar())
+		return "", errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Quote expected, found %c", p.CurrentChar())
 	}
 
 	word := make([]rune, 0, 30)
@@ -65,12 +65,12 @@ func (p *Lexer) ExtractQuotedString() (string, error) {
 		case p.Peek('"'):
 			return string(word), nil
 		case p.Test('\n'):
-			return "", errors.NewParserError(p.LineNumber(), p.CharNumber(), "Not found end of quoted string, found \\n")
+			return "", errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Not found end of quoted string, found \\n")
 		default:
 			word = append(word, p.Next())
 		}
 	}
-	return "", errors.NewParserError(p.LineNumber(), p.CharNumber(), "EOF reached, nothing to extract")
+	return "", errors.NewLexerError(p.LineNumber(), p.CharNumber(), "EOF reached, nothing to extract")
 }
 
 // TODO: replace by skipping, NOT extraction
@@ -105,7 +105,7 @@ func (p *Lexer) SkipWhiteSpaces() {
 func (p *Lexer) PeekSymbol(symbol rune) error {
 	p.SkipWhiteSpaces()
 	if !p.Peek(symbol) {
-		return errors.NewParserError(p.LineNumber(), p.CharNumber(), "Expected %c found nothing", symbol)
+		return errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Expected %c found nothing", symbol)
 	}
 	return nil
 }

@@ -17,7 +17,7 @@ func (e *ParserError) Error() string {
 	)
 }
 
-func NewParserError(line int, char int, msg string, args ...any) *ParserError {
+func NewLexerError(line int, char int, msg string, args ...any) *ParserError {
 	return &ParserError{
 		message: fmt.Sprintf(msg, args...),
 		lineNumber: line,
