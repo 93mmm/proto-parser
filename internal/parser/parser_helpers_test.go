@@ -132,3 +132,12 @@ func TestParser_SkipUntilNextLine(t *testing.T) {
 	assert.Equal(t, "three", actual)
 	assert.NoError(t, err)
 }
+
+func TestParser_SkipCurlyBraces(t *testing.T) {
+	input := "{{{{{{{{{{{{{{}}}}}}}}}}}}}}"
+	parser := newProtoParser(source.NewStringSource(input))
+	parser.skipCurlyBraces()
+
+	t.Log(parser.CharNumber())
+	assert.True(t, parser.EOF())
+}

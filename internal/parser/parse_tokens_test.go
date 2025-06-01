@@ -10,7 +10,7 @@ import (
 
 func withSpaces(parts ...string) string {
 	spaces := "\n \t\n \t"
-	return spaces + strings.Join(parts, spaces) + spaces
+	return spaces + strings.Join(parts, spaces)
 }
 
 func TestParseTokens_Syntax(t *testing.T) {
@@ -33,6 +33,7 @@ func TestParseTokens_Syntax(t *testing.T) {
 			assert.Equal(t, "syntax", result.Type())
 			assert.Equal(t, "proto3", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 
@@ -75,6 +76,7 @@ func TestParseTokens_Package(t *testing.T) {
 			assert.Equal(t, "package", result.Type())
 			assert.Equal(t, "example", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 
@@ -116,6 +118,7 @@ func TestParseTokens_Import(t *testing.T) {
 			assert.Equal(t, "import", result.Type())
 			assert.Equal(t, "google/protobuf/timestamp.proto", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 
@@ -156,6 +159,7 @@ func TestParseTokens_Option(t *testing.T) {
 			assert.Equal(t, "option", result.Type())
 			assert.Equal(t, "go_package", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 
@@ -197,6 +201,7 @@ func TestParseTokens_Service(t *testing.T) {
 			assert.Equal(t, "service", result[0].Type())
 			assert.Equal(t, "Example", result[0].Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 
@@ -242,6 +247,7 @@ func TestParseTokens_Rpc(t *testing.T) {
 			assert.Equal(t, "rpc", result.Type())
 			assert.Equal(t, "ExampleRPC", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 }
@@ -264,6 +270,7 @@ func TestParseTokens_Enum(t *testing.T) {
 			assert.Equal(t, "enum", result.Type())
 			assert.Equal(t, "ExampleEnum", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 }
@@ -288,6 +295,7 @@ func TestParseTokens_Message(t *testing.T) {
 			assert.Equal(t, "message", result.Type())
 			assert.Equal(t, "ExampleRPCResponse", result.Name())
 			assert.NoError(t, err)
+			assert.True(t, parser.EOF())
 		}
 	})
 }

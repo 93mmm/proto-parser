@@ -19,7 +19,7 @@ Options:
 
 Please provide at least one input file to process.`
 
-func ParseArguments() []string {
+func DocPaths() []string {
 	if len(os.Args) == 1 {
 		fmt.Println(helpMessage)
 		os.Exit(1)

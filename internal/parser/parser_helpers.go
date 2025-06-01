@@ -100,3 +100,22 @@ func (p *protoParser) skipUntilMatch(symbol rune) {
 		}
 	}
 }
+
+func (p *protoParser) skipCurlyBraces() {
+	p.skipUntilMatch('{')
+	p.Next()
+	openCounter := 1
+	for !p.EOF() && openCounter != 0 {
+		switch {
+		case p.Test('}'):
+			p.Next()
+			openCounter--
+		case p.Test('{'):
+			p.Next()
+			openCounter++
+		default:
+			p.Next()
+		}
+	}
+	p.Next()
+}
