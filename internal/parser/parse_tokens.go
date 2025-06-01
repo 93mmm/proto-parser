@@ -153,6 +153,7 @@ func (p *protoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 		rpcs = append(rpcs, r)
 		p.skipWhiteSpaces()
 	}
+	p.Next()
 
 	return rpcs, nil
 }
@@ -212,8 +213,7 @@ func (p *protoParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	p.skipUntilMatch('{')
-	p.skipUntilMatch('}')
+	p.skipCurlyBraces()
 	return s, nil
 }
 
@@ -235,7 +235,6 @@ func (p *protoParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s.SetName(name)
 	s.SetEndChar(p.CharNumber())
 
-	p.skipUntilMatch('{')
-	p.skipUntilMatch('}')
+	p.skipCurlyBraces()
 	return s, nil
 }

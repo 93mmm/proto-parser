@@ -7,7 +7,7 @@ import (
 )
 
 type Parser interface {
-	ParseDocument() []*symbols.Symbol
+	ParseDocument() ([]*symbols.Symbol, error)
 }
 
 type parser struct {
@@ -22,12 +22,14 @@ func NewParser(src source.Source) Parser {
 	}
 }
 
-func (p *parser) ParseDocument() []*symbols.Symbol {
+func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 	symbols := make([]*symbols.Symbol, 0, 10)
 
 	for !p.EOF() {
-		p.skipWhiteSpaces()
-		word, _ := p.extractKeyword() // TODO: check error
+		word, err := p.extractKeyword() // TODO: check error
+		if err != nil {
+			return nil, err
+		}
 
 		switch word {
 		case token.Syntax:
@@ -73,6 +75,7 @@ func (p *parser) ParseDocument() []*symbols.Symbol {
 			}
 			symbols = append(symbols, p)
 		}
+		p.skipWhiteSpaces()
 	}
-	return symbols
+	return symbols, nil
 }
