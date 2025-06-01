@@ -245,3 +245,25 @@ func TestParseTokens_Rpc(t *testing.T) {
 		}
 	})
 }
+
+func TestParseTokens_Enum(t *testing.T) {
+	t.Run("Normal", func(t *testing.T) {
+		input := []string{
+			`enum ExampleEnum {
+				ONE = 0;
+				TWO = 1;
+				THREE = 2;
+			}`,
+			withSpaces("enum", "ExampleEnum", "{", "}"),
+		}
+		for _, in := range input {
+			parser := NewProtoParser(source.NewStringSource(in))
+			parser.extractKeyword()
+			result, err := parser.ParseEnumToken()
+
+			assert.Equal(t, "enum", result.Type())
+			assert.Equal(t, "ExampleEnum", result.Name())
+			assert.NoError(t, err)
+		}
+	})
+}

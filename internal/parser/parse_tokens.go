@@ -145,7 +145,10 @@ func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	rpcs = append(rpcs, s)
 
 	for !p.Test('}') && !p.EOF() {
-		p.extractKeyword()
+		keyword, _ := p.extractKeyword()
+		if keyword != "rpc" {
+			// TODO: check error
+		}
 		r, _ := p.ParseRpcToken() // TODO: check error
 		rpcs = append(rpcs, r)
 		p.skipWhiteSpaces()
@@ -187,16 +190,34 @@ func (p *ProtoParser) ParseRpcToken() (*symbols.Symbol, error) {
 	return s, nil
 }
 
+// enum ExampleEnum {
+//   ONE = 0;
+//   TWO = 1;
+//   THREE = 2;
+// }
 func (p *ProtoParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
 
-	if err := p.peekSemicolon(); err != nil {
+	p.skipWhiteSpaces()
+
+	s.SetLine(p.LineNumber())
+	s.SetStartChar(p.CharNumber())
+
+	name, err := p.extractName()
+	if err != nil {
 		return nil, err
 	}
+
+	s.SetName(name)
+	s.SetEndChar(p.CharNumber())
+
+	p.skipUntilMatch('{')
+	p.skipUntilMatch('}')
 	return s, nil
 }
 
+// message ExampleRPCResponse {}
 func (p *ProtoParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
