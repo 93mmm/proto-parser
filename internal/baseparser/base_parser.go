@@ -64,8 +64,9 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 	p.charNumber++
 }
 
-func (p *BaseParser) LineNumber() int { return p.lineNumber }
-func (p *BaseParser) CharNumber() int { return p.charNumber }
+func (p *BaseParser) CurrentChar() rune { return p.currentChar }
+func (p *BaseParser) LineNumber() int   { return p.lineNumber }
+func (p *BaseParser) CharNumber() int   { return p.charNumber }
 
 func (p *BaseParser) Test(expected rune) bool {
 	return expected == p.currentChar

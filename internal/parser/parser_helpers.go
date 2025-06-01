@@ -1,7 +1,5 @@
 package parser
 
-import "fmt"
-
 // TODO: DRY principle, maybe fix it?
 
 func (p *protoParser) extractKeyword() (string, error) {
@@ -16,7 +14,7 @@ func (p *protoParser) extractKeyword() (string, error) {
 		}
 	}
 	if len(keyword) == 0 {
-		return "", NewParserError("Expected keyword, found nothing", p.LineNumber(), p.CharNumber())
+		return "", NewParserError(p.LineNumber(), p.CharNumber(), "Expected keyword, found %c", p.CurrentChar())
 	}
 	return string(keyword), nil
 }
@@ -31,14 +29,14 @@ func (p *protoParser) extractName() (string, error) {
 		}
 	}
 	if len(name) == 0 {
-		return "", NewParserError("Expected name, found nothing", p.LineNumber(), p.CharNumber())
+		return "", NewParserError(p.LineNumber(), p.CharNumber(), "Expected name, found %c", p.CurrentChar())
 	}
 	return string(name), nil
 }
 
 func (p *protoParser) extractQuotedString() (string, error) {
 	if !p.Peek('"') {
-		return "", NewParserError("Quote expected", p.LineNumber(), p.CharNumber())
+		return "", NewParserError(p.LineNumber(), p.CharNumber(), "Quote expected, found %c", p.CurrentChar())
 	}
 
 	word := make([]rune, 0, 30)
@@ -47,12 +45,12 @@ func (p *protoParser) extractQuotedString() (string, error) {
 		case p.Peek('"'):
 			return string(word), nil
 		case p.Test('\n'):
-			return "", NewParserError("Not found end of quoted string", p.LineNumber(), p.CharNumber())
+			return "", NewParserError(p.LineNumber(), p.CharNumber(), "Not found end of quoted string, found \\n")
 		default:
 			word = append(word, p.Next())
 		}
 	}
-	return "", NewParserError("EOF reached, nothing to extract", p.LineNumber(), p.CharNumber())
+	return "", NewParserError(p.LineNumber(), p.CharNumber(), "EOF reached, nothing to extract")
 }
 
 func (p *protoParser) extractNameBetweenParentheses() (string, error) {
@@ -86,7 +84,7 @@ func (p *protoParser) skipWhiteSpaces() {
 func (p *protoParser) peekSymbol(symbol rune) error {
 	p.skipWhiteSpaces()
 	if !p.Peek(symbol) {
-		return NewParserError(fmt.Sprintf("Expected %c found nothing", symbol), p.LineNumber(), p.CharNumber())
+		return NewParserError(p.LineNumber(), p.CharNumber(), "Expected %c found nothing", symbol)
 	}
 	return nil
 }
