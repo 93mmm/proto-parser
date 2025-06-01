@@ -26,6 +26,12 @@ func newTestTokenParser(in string) *tokenParser {
 	return NewTokenParser(l)
 }
 
+type SyntaxToken struct{}
+
+func (_ SyntaxToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseSyntaxToken(collector)
+}
+
 // syntax = "proto3";
 func (p *tokenParser) ParseSyntaxToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
@@ -55,6 +61,12 @@ func (p *tokenParser) ParseSyntaxToken(collector symbols.Collector) error {
 	return nil
 }
 
+type PackageToken struct{}
+
+func (_ PackageToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParsePackageToken(collector)
+}
+
 // package example;
 func (p *tokenParser) ParsePackageToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
@@ -80,6 +92,12 @@ func (p *tokenParser) ParsePackageToken(collector symbols.Collector) error {
 	return nil
 }
 
+type ImportToken struct{}
+
+func (_ ImportToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseImportToken(collector)
+}
+
 // import "google/protobuf/timestamp.proto";
 func (p *tokenParser) ParseImportToken(collector symbols.Collector) error {
 	s := &symbols.Symbol{}
@@ -103,6 +121,12 @@ func (p *tokenParser) ParseImportToken(collector symbols.Collector) error {
 	}
 	collector.Add(s)
 	return nil
+}
+
+type OptionToken struct{}
+
+func (_ OptionToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseOptionToken(collector)
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
@@ -139,6 +163,12 @@ func (p *tokenParser) ParseOptionToken(collector symbols.Collector) error {
 	return nil
 }
 
+type ServiceToken struct{}
+
+func (_ ServiceToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseServiceToken(collector)
+}
+
 //	service Example {
 //	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 //	}
@@ -170,7 +200,7 @@ func (p *tokenParser) ParseServiceToken(collector symbols.Collector) error {
 	for !p.Test('}') && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
-			return errors.NewLexerError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
+			return errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
 		}
 		err := p.ParseRpcToken(collector)
 		if err != nil {
@@ -217,6 +247,12 @@ func (p *tokenParser) ParseRpcToken(collector symbols.Collector) error {
 	return nil
 }
 
+type EnumToken struct{}
+
+func (_ EnumToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseEnumToken(collector)
+}
+
 //	enum ExampleEnum {
 //	  ONE = 0;
 //	  TWO = 1;
@@ -242,6 +278,12 @@ func (p *tokenParser) ParseEnumToken(collector symbols.Collector) error {
 	p.SkipCurlyBraces()
 	collector.Add(s)
 	return nil
+}
+
+type MessageToken struct{}
+
+func (_ MessageToken) Parse(parser *tokenParser, collector symbols.Collector) error {
+	return parser.ParseMessageToken(collector)
 }
 
 // message ExampleRPCResponse {}

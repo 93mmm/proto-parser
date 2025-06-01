@@ -1,6 +1,7 @@
 package parser
 
 import (
+	"github.com/93mmm/proto-parser/internal/errors"
 	"github.com/93mmm/proto-parser/internal/symbols"
 	"github.com/93mmm/proto-parser/internal/token"
 )
@@ -17,6 +18,10 @@ type Source interface {
 	Next() (rune, error)
 }
 
+type TokenBuilder interface {
+	Parse(*tokenParser, symbols.Collector) error
+}
+
 func NewParser(pp *tokenParser) Parser {
 	return &parser{
 		tokenParser: pp,
@@ -25,51 +30,28 @@ func NewParser(pp *tokenParser) Parser {
 
 func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 	syms := symbols.NewCollector(10)
+	tokenBuilders := map[string]TokenBuilder{
+		token.Syntax: SyntaxToken{},
+		token.Package: PackageToken{},
+		token.Import: ImportToken{},
+		token.Option: OptionToken{},
+		token.Service: ServiceToken{},
+		token.Enum: EnumToken{},
+		token.Message: MessageToken{},
+	}
 
 	for !p.EOF() {
 		word, err := p.ExtractKeyword()
 		if err != nil {
 			return nil, err
 		}
-
-		switch word {
-		case token.Syntax:
-			err := p.ParseSyntaxToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Package:
-			err := p.ParsePackageToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Import:
-			err := p.ParseImportToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Option:
-			err := p.ParseOptionToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Service:
-			err := p.ParseServiceToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Enum:
-			err := p.ParseEnumToken(syms)
-			if err != nil {
-				return nil, err
-			}
-		case token.Message:
-			err := p.ParseMessageToken(syms)
-			if err != nil {
-				return nil, err
-			}
+		b, ok := tokenBuilders[word]
+		if !ok {
+			return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Invalid keyword received")
 		}
+		err = b.Parse(p.tokenParser, syms)
 		p.SkipWhiteSpaces()
 	}
+
 	return syms.All(), nil
 }
