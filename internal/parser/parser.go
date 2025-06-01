@@ -64,7 +64,7 @@ func (p *ProtoParser) ParseDocument() []*symbols.Symbol {
 			}
 			symbols = append(symbols, p)
 		case token.Message:
-			p, err := p.ParseEnumToken()
+			p, err := p.ParseMessageToken()
 			if err != nil {
 				panic(err)
 			}

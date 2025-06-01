@@ -9,7 +9,9 @@ func IsKeyword(symbol rune) bool {
 
 func IsName(symbol rune) bool {
 	return unicode.IsLetter(symbol) ||
+		unicode.IsDigit(symbol) ||
 		symbol == '_'
+
 }
 
 func IsQuote(symbol rune) bool {

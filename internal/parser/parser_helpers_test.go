@@ -101,6 +101,22 @@ func TestParser_ExtractName(t *testing.T) {
 	})
 }
 
+func TestParser_ExtractNameBetweenParantheses(t *testing.T) {
+	t.Run("Normal names", func(t *testing.T) {
+		input := "(One_Two_Three)"
+		expected := "One_Two_Three"
+		parser := NewProtoParser(source.NewStringSource(input))
+
+		actual, err := parser.extractNameBetweenParentheses()
+		assert.Equal(t, expected, actual)
+		assert.NoError(t, err)
+
+		actual, err = parser.extractKeyword()
+		assert.Equal(t, "", actual)
+		assert.Error(t, err)
+	})
+}
+
 func TestParser_SkipUntilNextLine(t *testing.T) {
 	input := "one two : three"
 	parser := NewProtoParser(source.NewStringSource(input))

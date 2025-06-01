@@ -69,7 +69,6 @@ func (p *ProtoParser) extractNameBetweenParentheses() (string, error) {
 	if err := p.peekCloseParenthesis(); err != nil {
 		return "", err
 	}
-	p.skipWhiteSpaces()
 
 	return name, nil
 }

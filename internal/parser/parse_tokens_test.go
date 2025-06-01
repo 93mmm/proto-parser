@@ -199,6 +199,28 @@ func TestParseTokens_Service(t *testing.T) {
 			assert.NoError(t, err)
 		}
 	})
+
+	t.Run("Normal, with rpcs inside", func(t *testing.T) {
+		input := `service Example {
+			rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+			rpc ExampleRPC1(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+		}`
+		parser := NewProtoParser(source.NewStringSource(input))
+		parser.extractKeyword()
+		result, err := parser.ParseServiceToken()
+
+		assert.Equal(t, 3, len(result))
+
+		assert.Equal(t, "service", result[0].Type())
+		assert.Equal(t, "Example", result[0].Name())
+
+		assert.Equal(t, "rpc", result[1].Type())
+		assert.Equal(t, "ExampleRPC", result[1].Name())
+
+		assert.Equal(t, "rpc", result[2].Type())
+		assert.Equal(t, "ExampleRPC1", result[2].Name())
+		assert.NoError(t, err)
+	})
 }
 
 func TestParseTokens_Rpc(t *testing.T) {

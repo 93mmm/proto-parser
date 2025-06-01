@@ -114,9 +114,9 @@ func (p *ProtoParser) ParseOptionToken() (*symbols.Symbol, error) {
 	return s, nil
 }
 
-// service Example {
-//   rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-// }
+//	service Example {
+//	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+//	}
 func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
@@ -143,7 +143,9 @@ func (p *ProtoParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	p.skipWhiteSpaces()
 	rpcs := make([]*symbols.Symbol, 0, 4)
 	rpcs = append(rpcs, s)
-	for !p.Test('}') {
+
+	for !p.Test('}') && !p.EOF() {
+		p.extractKeyword()
 		r, _ := p.ParseRpcToken() // TODO: check error
 		rpcs = append(rpcs, r)
 		p.skipWhiteSpaces()
