@@ -91,7 +91,7 @@ func (p *ProtoParser) peekCloseCurlyBrace() error {
 
 func (p *ProtoParser) skipUntilMatch(symbol rune) {
 	for !p.EOF() {
-		if !p.Peek(symbol) {
+		if !p.Test(symbol) {
 			p.Next()
 		} else {
 			break

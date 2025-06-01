@@ -108,6 +108,10 @@ func TestParser_SkipUntilNextLine(t *testing.T) {
 	parser.extractKeyword()
 	parser.skipUntilMatch(':')
 
+	assert.True(t, parser.Test(':'))
+	
+	parser.Next()
+
 	actual, err := parser.extractKeyword()
 	assert.Equal(t, "three", actual)
 	assert.NoError(t, err)
