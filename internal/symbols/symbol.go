@@ -1,6 +1,10 @@
 package symbols
 
-import "fmt"
+import (
+	"fmt"
+
+	"github.com/93mmm/proto-parser/internal/token"
+)
 
 type Symbol struct {
 	name  string
@@ -21,39 +25,19 @@ func NewSymbol(name, kind string, line, start, end int) *Symbol {
 }
 
 func (s *Symbol) String() string {
+	actualType := s.kind
+	if actualType == token.Rpc {
+		actualType = "method"
+	}
+
 	return fmt.Sprintf(
 		"%v %v %v:%v-%v",
 		s.name,
-		s.kind,
+		actualType,
 		s.line,
 		s.start,
 		s.end,
 	)
-}
-
-func (s *Symbol) SetName(name string) *Symbol {
-	s.name = name
-	return s
-}
-
-func (s *Symbol) SetType(kind string) *Symbol {
-	s.kind = kind
-	return s
-}
-
-func (s *Symbol) SetLine(line int) *Symbol {
-	s.line = line
-	return s
-}
-
-func (s *Symbol) SetStart(start int) *Symbol {
-	s.start = start
-	return s
-}
-
-func (s *Symbol) SetEnd(end int) *Symbol {
-	s.end = end
-	return s
 }
 
 func (s *Symbol) Name() string { return s.name }

@@ -13,51 +13,55 @@ type SymbolFactory interface {
 	NewMessageSymbol(name string, line, start, end int) *Symbol
 }
 
-type DefaultSymbolFactory struct{}
+type defaultSymbolFactory struct{}
 
-func (_ DefaultSymbolFactory) NewSyntaxSymbol(name string, line, start, end int) *Symbol {
+func NewSymbolFactory() *defaultSymbolFactory {
+	return &defaultSymbolFactory{}
+}
+
+func (_ defaultSymbolFactory) NewSyntaxSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Syntax, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewPackageSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewPackageSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Package, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewImportSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewImportSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Import, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewOptionSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewOptionSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Option, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewServiceSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewServiceSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Service, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewRpcSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewRpcSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Rpc, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewEnumSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewEnumSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Enum, line, start, end,
 	)
 }
 
-func (_ DefaultSymbolFactory) NewMessageSymbol(name string, line, start, end int) *Symbol {
+func (_ defaultSymbolFactory) NewMessageSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
 		name, token.Message, line, start, end,
 	)
