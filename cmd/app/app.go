@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 
-	base "github.com/93mmm/proto-parser/internal/baseparser"
+	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
 	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser"
 	"github.com/93mmm/proto-parser/internal/parser/builder"
