@@ -10,6 +10,7 @@ import (
 )
 
 type tokenParser struct {
+	factory symbols.SymbolFactory
 	*lexer.Lexer
 }
 
@@ -27,194 +28,191 @@ func newTestTokenParser(in string) *tokenParser {
 }
 
 // syntax = "proto3";
-func (p *tokenParser) ParseSyntaxToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Syntax)
 
 	if err := p.PeekSymbol('='); err != nil {
-		return err
+		return nil, err
 	}
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractQuotedString()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return err
+		return nil, err
 	}
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 // package example;
-func (p *tokenParser) ParsePackageToken(collector symbols.Collector) error {
+func (p *tokenParser) ParsePackageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Package)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return err
+		return nil, err
 	}
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 // import "google/protobuf/timestamp.proto";
-func (p *tokenParser) ParseImportToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseImportToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Import)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractQuotedString()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return err
+		return nil, err
 	}
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
-func (p *tokenParser) ParseOptionToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Option)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	if err := p.PeekSymbol('='); err != nil {
-		return err
+		return nil, err
 	}
 
 	p.SkipWhiteSpaces()
 	if _, err := p.ExtractQuotedString(); err != nil {
-		return err
+		return nil, err
 	}
 
 	if err := p.PeekSymbol(';'); err != nil {
-		return err
+		return nil, err
 	}
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 //	service Example {
 //	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 //	}
-func (p *tokenParser) ParseServiceToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
+	result := make([]*symbols.Symbol, 0, 10)
 	s := &symbols.Symbol{}
 	s.SetType(token.Service)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	p.SkipWhiteSpaces()
 
 	if err := p.PeekSymbol('{'); err != nil {
-		return err
+		return nil, err
 	}
 
 	p.SkipWhiteSpaces()
-	collector.Add(s)
+	result = append(result, s)
 	for !p.Test('}') && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
-			return errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
+			return result, errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
 		}
-		err := p.ParseRpcToken(collector)
+		s, err := p.ParseRpcToken()
 		if err != nil {
-			return err
+			return result, err
 		}
+		result = append(result, s)
 		p.SkipWhiteSpaces()
 	}
 	p.Next()
 
-	return nil
+	return result, nil
 }
 
 // rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-func (p *tokenParser) ParseRpcToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Rpc)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
-		return err
+		return nil, err
 	}
 	p.ExtractKeyword()
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
-		return err
+		return nil, err
 	}
 
 	p.SkipUntilMatch(';')
 	if err := p.PeekSymbol(';'); err != nil {
-		return err
+		return nil, err
 	}
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 //	enum ExampleEnum {
@@ -222,47 +220,45 @@ func (p *tokenParser) ParseRpcToken(collector symbols.Collector) error {
 //	  TWO = 1;
 //	  THREE = 2;
 //	}
-func (p *tokenParser) ParseEnumToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseEnumToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Enum)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	p.SkipCurlyBraces()
-	collector.Add(s)
-	return nil
+	return s, nil
 }
 
 // message ExampleRPCResponse {}
-func (p *tokenParser) ParseMessageToken(collector symbols.Collector) error {
+func (p *tokenParser) ParseMessageToken() (*symbols.Symbol, error) {
 	s := &symbols.Symbol{}
 	s.SetType(token.Message)
 
 	p.SkipWhiteSpaces()
 
 	s.SetLine(p.LineNumber()).
-		SetStartChar(p.CharNumber())
+		SetStart(p.CharNumber())
 
 	name, err := p.ExtractName()
 	if err != nil {
-		return err
+		return nil, err
 	}
 
 	s.SetName(name).
-		SetEndChar(p.CharNumber())
+		SetEnd(p.CharNumber())
 
 	p.SkipCurlyBraces()
-	collector.Add(s)
-	return nil
+	return s, nil
 }

@@ -4,13 +4,48 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/93mmm/proto-parser/internal/symbols"
 	"github.com/stretchr/testify/assert"
 )
 
 func withSpaces(parts ...string) string {
 	spaces := "\n \t\n \t"
 	return spaces + strings.Join(parts, spaces)
+}
+
+func Test_ParseSyntaxToken_NameType(t *testing.T) {
+	type result struct {
+		name string
+		kind string
+	}
+	regularRes := result{
+		"proto3", "syntax",
+	}
+	tests := []struct {
+		name   string
+		input  string
+		output result
+	}{
+		{
+			name:   "Normal spaces",
+			input:  `syntax = "proto3";`,
+			output: regularRes,
+		}, {
+			name:   "Without spaces",
+			input:  `syntax="proto3";`,
+			output: regularRes,
+		}, {
+			name:   "Maximal spaces",
+			input:  withSpaces("syntax", "=", `"proto3"`, ";"),
+			output: regularRes,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			parser := newTestTokenParser(test.input)
+			parser.ExtractKeyword()
+			// TODO: edit this
+		})
+	}
 }
 
 func TestParseTokens_Syntax(t *testing.T) {
@@ -23,9 +58,7 @@ func TestParseTokens_Syntax(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseSyntaxToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseSyntaxToken()
 
 			if result == nil {
 				t.Error("result is nil", err)
@@ -51,11 +84,9 @@ func TestParseTokens_Syntax(t *testing.T) {
 			t.Run(in, func(t *testing.T) {
 				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
-				c := symbols.NewCollector(3)
-				err := parser.ParseSyntaxToken(c)
-				result := c.All()
+				result, err := parser.ParseSyntaxToken()
 
-				assert.Zero(t, len(result))
+				assert.Nil(t, result)
 				assert.Error(t, err)
 			})
 		}
@@ -71,9 +102,7 @@ func TestParseTokens_Package(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParsePackageToken(c)
-			result := c.All()[0]
+			result, err := parser.ParsePackageToken()
 
 			if result == nil {
 				t.Error("result is nil", err)
@@ -97,11 +126,9 @@ func TestParseTokens_Package(t *testing.T) {
 			t.Run(in, func(t *testing.T) {
 				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
-				c := symbols.NewCollector(3)
-				err := parser.ParsePackageToken(c)
-				result := c.All()
+				result, err := parser.ParsePackageToken()
 
-				assert.Zero(t, len(result))
+				assert.Nil(t, result)
 				assert.Error(t, err)
 			})
 		}
@@ -117,9 +144,7 @@ func TestParseTokens_Import(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseImportToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseImportToken()
 
 			if result == nil {
 				t.Error("result is nil", err)
@@ -142,11 +167,9 @@ func TestParseTokens_Import(t *testing.T) {
 			t.Run(in, func(t *testing.T) {
 				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
-				c := symbols.NewCollector(3)
-				err := parser.ParseImportToken(c)
-				result := c.All()
+				result, err := parser.ParseImportToken()
 
-				assert.Zero(t, len(result))
+				assert.Nil(t, result)
 				assert.Error(t, err)
 			})
 		}
@@ -162,9 +185,7 @@ func TestParseTokens_Option(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseOptionToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseOptionToken()
 
 			if result == nil {
 				t.Error("result is nil", err)
@@ -190,11 +211,9 @@ func TestParseTokens_Option(t *testing.T) {
 			t.Run(in, func(t *testing.T) {
 				parser := newTestTokenParser(in)
 				parser.ExtractKeyword()
-				c := symbols.NewCollector(3)
-				err := parser.ParseOptionToken(c)
-				result := c.All()
+				result, err := parser.ParseOptionToken()
 
-				assert.Zero(t, len(result))
+				assert.Nil(t, result)
 				assert.Error(t, err)
 			})
 		}
@@ -210,11 +229,7 @@ func TestParseTokens_Service(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseServiceToken(c)
-			result := c.All()
-
-			assert.Equal(t, 1, len(result))
+			result, err := parser.ParseServiceToken()
 
 			assert.Equal(t, "service", result[0].Type())
 			assert.Equal(t, "Example", result[0].Name())
@@ -230,9 +245,7 @@ func TestParseTokens_Service(t *testing.T) {
 		}`
 		parser := newTestTokenParser(input)
 		parser.ExtractKeyword()
-		c := symbols.NewCollector(3)
-		err := parser.ParseServiceToken(c)
-		result := c.All()
+		result, err := parser.ParseServiceToken()
 
 		assert.Equal(t, 3, len(result))
 
@@ -258,9 +271,7 @@ func TestParseTokens_Rpc(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseRpcToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseRpcToken()
 
 			if result == nil {
 				t.Error("result is nil", err)
@@ -287,9 +298,7 @@ func TestParseTokens_Enum(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseEnumToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseEnumToken()
 
 			assert.Equal(t, "enum", result.Type())
 			assert.Equal(t, "ExampleEnum", result.Name())
@@ -314,9 +323,7 @@ func TestParseTokens_Message(t *testing.T) {
 		for _, in := range input {
 			parser := newTestTokenParser(in)
 			parser.ExtractKeyword()
-			c := symbols.NewCollector(3)
-			err := parser.ParseMessageToken(c)
-			result := c.All()[0]
+			result, err := parser.ParseMessageToken()
 
 			assert.Equal(t, "message", result.Type())
 			assert.Equal(t, "ExampleRPCResponse", result.Name())

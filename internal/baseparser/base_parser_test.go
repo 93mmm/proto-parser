@@ -78,7 +78,7 @@ func Test_CurrentLineAndChar(t *testing.T) {
 			},
 		},
 		{
-			name: "Empty",
+			name:  "Empty",
 			input: "",
 			want: []pos{
 				// reached EOF

@@ -1,7 +1,7 @@
 package symbols
 
 type Collector interface {
-	Add(*Symbol)
+	Add(...*Symbol)
 	All() []*Symbol
 }
 
@@ -15,8 +15,8 @@ func NewCollector(capacity int) *collector {
 	}
 }
 
-func (c *collector) Add(s *Symbol) {
-	c.symbols = append(c.symbols, s)
+func (c *collector) Add(s ...*Symbol) {
+	c.symbols = append(c.symbols, s...)
 }
 
 func (c *collector) All() []*Symbol {
