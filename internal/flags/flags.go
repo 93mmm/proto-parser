@@ -32,6 +32,5 @@ func DocPathOrDie() string {
 		fmt.Println(helpMessage)
 		os.Exit(1)
 	}
-
 	return path
 }
