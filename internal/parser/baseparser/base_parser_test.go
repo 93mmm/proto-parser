@@ -3,7 +3,7 @@ package baseparser
 import (
 	"testing"
 
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/stretchr/testify/assert"
 )
 

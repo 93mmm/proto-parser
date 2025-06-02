@@ -3,7 +3,7 @@ package baseparser
 import (
 	"unicode"
 
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 )
 
 type Source interface {

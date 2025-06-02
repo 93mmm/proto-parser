@@ -1,10 +1,10 @@
 package builder
 
 import (
-	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
 	"github.com/93mmm/proto-parser/internal/errors"
+	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
 	"github.com/93mmm/proto-parser/internal/parser/lexer"
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
 
@@ -15,7 +15,7 @@ type TokenParser struct {
 
 func NewTokenParser(l *lexer.Lexer) *TokenParser {
 	return &TokenParser{
-		Lexer: l,
+		Lexer:   l,
 		factory: symbols.NewSymbolFactory(),
 	}
 }

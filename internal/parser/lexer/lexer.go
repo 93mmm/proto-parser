@@ -1,9 +1,9 @@
 package lexer
 
 import (
-	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
 	"github.com/93mmm/proto-parser/internal/errors"
-	"github.com/93mmm/proto-parser/internal/source"
+	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 )
 
 type Lexer struct {

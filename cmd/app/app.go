@@ -3,11 +3,11 @@ package main
 import (
 	"fmt"
 
-	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
-	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser"
+	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
 	"github.com/93mmm/proto-parser/internal/parser/builder"
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/parser/lexer"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
 
