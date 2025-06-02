@@ -1,4 +1,4 @@
-package baseparser
+package base
 
 import (
 	"testing"

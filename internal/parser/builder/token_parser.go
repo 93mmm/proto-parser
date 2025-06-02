@@ -2,7 +2,7 @@ package builder
 
 import (
 	"github.com/93mmm/proto-parser/internal/errors"
-	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
+	"github.com/93mmm/proto-parser/internal/parser/base"
 	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
