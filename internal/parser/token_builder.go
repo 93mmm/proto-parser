@@ -26,11 +26,6 @@ type TokenBuilder interface {
 
 type SyntaxToken struct{}
 
-// func (_ SyntaxToken) Parse(parser *tokenParser, collector symbols.Collector) error {
-// 	return parser.ParseSyntaxToken(collector)
-// }
-
-// TODO: i want to rewrite this
 func (_ SyntaxToken) Parse(parser *tokenParser, collector symbols.Collector) error {
 	s, err := parser.ParseSyntaxToken()
 	if err != nil {
