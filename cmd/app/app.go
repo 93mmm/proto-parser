@@ -6,6 +6,7 @@ import (
 	base "github.com/93mmm/proto-parser/internal/baseparser"
 	"github.com/93mmm/proto-parser/internal/lexer"
 	"github.com/93mmm/proto-parser/internal/parser"
+	"github.com/93mmm/proto-parser/internal/parser/builder"
 	"github.com/93mmm/proto-parser/internal/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
@@ -32,7 +33,7 @@ func RunParser(document string) error {
 	defer src.Close()
 	bp := base.NewBaseParser(src)
 	l := lexer.NewLexer(bp)
-	pp := parser.NewTokenParser(l)
+	pp := builder.NewTokenParser(l)
 	parsed, err := parser.NewParser(pp).ParseDocument()
 	if err != nil {
 		return err

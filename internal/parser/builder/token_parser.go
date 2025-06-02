@@ -1,4 +1,4 @@
-package parser
+package builder
 
 import (
 	base "github.com/93mmm/proto-parser/internal/baseparser"
@@ -8,19 +8,19 @@ import (
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
 
-type tokenParser struct {
+type TokenParser struct {
 	factory symbols.SymbolFactory
 	*lexer.Lexer
 }
 
-func NewTokenParser(l *lexer.Lexer) *tokenParser {
-	return &tokenParser{
+func NewTokenParser(l *lexer.Lexer) *TokenParser {
+	return &TokenParser{
 		Lexer: l,
 		factory: symbols.NewSymbolFactory(),
 	}
 }
 
-func newTestTokenParser(in string) *tokenParser {
+func newTestTokenParser(in string) *TokenParser {
 	src := source.NewStringSource(in)
 	bp := base.NewBaseParser(src)
 	l := lexer.NewLexer(bp)
@@ -28,7 +28,7 @@ func newTestTokenParser(in string) *tokenParser {
 }
 
 // syntax = "proto3";
-func (p *tokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 	if err := p.PeekSymbol('='); err != nil {
 		return nil, err
 	}
@@ -54,7 +54,7 @@ func (p *tokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 }
 
 // package example;
-func (p *tokenParser) ParsePackageToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParsePackageToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -74,7 +74,7 @@ func (p *tokenParser) ParsePackageToken() (*symbols.Symbol, error) {
 }
 
 // import "google/protobuf/timestamp.proto";
-func (p *tokenParser) ParseImportToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseImportToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -94,7 +94,7 @@ func (p *tokenParser) ParseImportToken() (*symbols.Symbol, error) {
 }
 
 // option go_package = "gitlab.ozon.ru/example/api/example;example";
-func (p *tokenParser) ParseOptionToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -126,7 +126,7 @@ func (p *tokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 //	service Example {
 //	  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
 //	}
-func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
+func (p *TokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -167,7 +167,7 @@ func (p *tokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 }
 
 // rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -201,7 +201,7 @@ func (p *tokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 //	  TWO = 1;
 //	  THREE = 2;
 //	}
-func (p *tokenParser) ParseEnumToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseEnumToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()
@@ -221,7 +221,7 @@ func (p *tokenParser) ParseEnumToken() (*symbols.Symbol, error) {
 }
 
 // message ExampleRPCResponse {}
-func (p *tokenParser) ParseMessageToken() (*symbols.Symbol, error) {
+func (p *TokenParser) ParseMessageToken() (*symbols.Symbol, error) {
 	p.SkipWhiteSpaces()
 
 	line, start := p.LineNumber(), p.CharNumber()

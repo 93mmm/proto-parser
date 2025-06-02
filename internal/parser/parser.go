@@ -2,6 +2,7 @@ package parser
 
 import (
 	"github.com/93mmm/proto-parser/internal/errors"
+	"github.com/93mmm/proto-parser/internal/parser/builder"
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
 
@@ -10,16 +11,16 @@ type Parser interface {
 }
 
 type parser struct {
-	*tokenParser
+	*builder.TokenParser
 }
 
 type Source interface {
 	Next() (rune, error)
 }
 
-func NewParser(pp *tokenParser) Parser {
+func NewParser(pp *builder.TokenParser) Parser {
 	return &parser{
-		tokenParser: pp,
+		TokenParser: pp,
 	}
 }
 
@@ -31,11 +32,11 @@ func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
 		if err != nil {
 			return nil, err
 		}
-		b, ok := getBuilder(keyword)
+		b, ok := builder.GetBuilder(keyword)
 		if !ok {
 			return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Invalid keyword received")
 		}
-		err = b.Parse(p.tokenParser, syms)
+		err = b.Parse(p.TokenParser, syms)
 		p.SkipWhiteSpaces()
 	}
 
