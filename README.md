@@ -1,7 +1,7 @@
 # proto-parser
 - protosym - консольная утилита для псевдо-парсинга .proto-файлов
 ### Пример:
-Исходный файл: [[examples/example.proto]]
+Исходный [файл](examples/example.proto)
 Запуск:
 ```bash
 ./protosym examples/example.proto
