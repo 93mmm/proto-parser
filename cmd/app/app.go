@@ -4,7 +4,7 @@ import (
 	"fmt"
 
 	base "github.com/93mmm/proto-parser/internal/baseparser"
-	"github.com/93mmm/proto-parser/internal/lexer"
+	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser"
 	"github.com/93mmm/proto-parser/internal/parser/builder"
 	"github.com/93mmm/proto-parser/internal/source"
