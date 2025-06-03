@@ -7,13 +7,33 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_ExtractKeyword(t *testing.T) {
-	tests := []struct {
-		name  string
-		input string
-		want  string
-		err   bool
-	}{
+type testCase struct {
+	name  string
+	input string
+	want  string
+	err   bool
+}
+
+type extractX func(*Lexer) (string, error)
+
+func runLexerTest(t *testing.T, extract extractX, tests []testCase) {
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			lexer := newTestLexer(test.input)
+			actual, err := extract(lexer)
+
+			assert.Equal(t, test.want, actual)
+			if test.err {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
+}
+
+func Test_Lexer_ExtractKeyword(t *testing.T) {
+	tests := []testCase{
 		{
 			"Normal parsing",
 			"input",
@@ -51,52 +71,35 @@ func Test_ExtractKeyword(t *testing.T) {
 			true,
 		},
 	}
-
-	for _, test := range tests {
-		t.Run(test.name, func(t *testing.T) {
-			lexer := newTestLexer(test.input)
-			actual, err := lexer.ExtractKeyword()
-
-			assert.Equal(t, test.want, actual)
-			if test.err {
-				assert.Error(t, err)
-			} else {
-				assert.NoError(t, err)
-			}
-		})
-	}
+	runLexerTest(t, (*Lexer).ExtractKeyword, tests)
 }
 
-func TestParser_ExtractQuotedString(t *testing.T) {
-	t.Run("Normal quotes", func(t *testing.T) {
-		input := "\" one \""
-		expected := " one "
-		parser := newTestLexer(input)
+func Test_Lexer_ExtractQuotedString(t *testing.T) {
+	tests := []testCase{
+		{
+			"Normal parsing",
+			"\"input\"",
+			"input",
+			false,
+		}, {
+			"Quote w/o pair",
+			"\"input",
+			"",
+			true,
+		}, {
+			"Without quote in begin",
+			"input\n\"",
+			"",
+			true,
+		}, {
+			"\\n between quotes",
+			"\"input\n\"",
+			"",
+			true,
+		},
+	}
 
-		actual, err := parser.ExtractQuotedString()
-		assert.Equal(t, expected, actual)
-		assert.NoError(t, err)
-	})
-
-	t.Run("Quote w/o pair", func(t *testing.T) {
-		input := "\" one "
-		expected := ""
-		parser := newTestLexer(input)
-
-		actual, err := parser.ExtractQuotedString()
-		assert.Equal(t, expected, actual)
-		assert.Error(t, err)
-	})
-
-	t.Run("Quote with pair on next string", func(t *testing.T) {
-		input := "\" one \n\""
-		expected := ""
-		parser := newTestLexer(input)
-
-		actual, err := parser.ExtractQuotedString()
-		assert.Equal(t, expected, actual)
-		assert.Error(t, err)
-	})
+	runLexerTest(t, (*Lexer).ExtractQuotedString, tests)
 }
 
 func TestParser_ExtractName(t *testing.T) {
