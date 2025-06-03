@@ -412,35 +412,36 @@ func Test_OptionToken_FAIL(t *testing.T) {
 			name:  "Quote on next line",
 			input: "option go_package = \"gitlab.ozon.ru/example/api/example;example;\n\";",
 		},
-		// {
-		// 	name: "No space",
-		// 	input: "optiongo_package = \"gitlab.ozon.ru/example/api/example;example;\";", // FIXME: optiongo_package -> optiongo + _package
-		// },
 	}
 	runFailTokenTest(t, (*TokenParser).ParseOptionToken, tests)
 }
 
-// TODO: custom method
-// func Test_ServiceToken_Fail(t *testing.T) {
-// 	tests := []failTest{
-// 		{
-// 			name:  "Missing brace pair",
-// 			input: "service Example {",
-// 		}, {
-// 			name:  "Missing brace pair",
-// 			input: "service Example }",
-// 		}, {
-// 			name: "Wrong keywords in braces",
-// 			input: `service Example {
-// 						aboba ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-// 					}`,
-// 		}, {
-// 			name:  "Quote on next line",
-// 			input: "import \"google/protobuf/timestamp.proto\n\";",
-// 		},
-// 	}
-// 	runFailTokenTest(t, (*TokenParser).ParseImportToken, tests)
-// }
+func Test_ServiceToken_Fail(t *testing.T) {
+	tests := []failTest{
+		{
+			name:  "Missing brace pair",
+			input: "service Example {",
+		}, {
+			name:  "Missing brace pair",
+			input: "service Example }",
+		}, {
+			name: "Wrong keywords in braces",
+			input: `service Example {
+						aboba ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+					}`,
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			parser := newTestTokenParser(test.input)
+			parser.ExtractKeyword()
+			res, err := parser.ParseServiceToken()
+
+			assert.Nil(t, res)
+			assert.Error(t, err)
+		})
+	}
+}
 
 func Test_RpcToken_FAIL(t *testing.T) {
 	tests := []failTest{

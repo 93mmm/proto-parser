@@ -111,7 +111,7 @@ func (p *Lexer) PeekSymbol(symbol rune) error {
 	return nil
 }
 
-func (p *Lexer) SkipUntilMatch(symbol rune) {
+func (p *Lexer) SkipUntilMatch(symbol rune) bool {
 	for !p.EOF() {
 		if !p.Test(symbol) {
 			p.Next()
@@ -119,11 +119,17 @@ func (p *Lexer) SkipUntilMatch(symbol rune) {
 			break
 		}
 	}
+	if p.EOF() {
+		return false
+	}
+	return true
 }
 
 // FIXME: bug, if eof reached and openCounter != 0 we don't throw error/return false
-func (p *Lexer) SkipCurlyBraces() {
-	p.SkipUntilMatch(constants.LeftBrace)
+func (p *Lexer) SkipCurlyBraces() bool {
+	if !p.SkipUntilMatch(constants.LeftBrace) {
+		return false
+	}
 	p.Next()
 	openCounter := 1
 	for !p.EOF() && openCounter != 0 {
@@ -138,5 +144,9 @@ func (p *Lexer) SkipCurlyBraces() {
 			p.Next()
 		}
 	}
+	if openCounter != 0 {
+		return false
+	}
 	p.Next()
+	return true
 }

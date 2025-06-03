@@ -153,14 +153,17 @@ func (p *TokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	for !p.Test(constants.RightBrace) && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
-			return result, errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
+			return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
 		}
 		s, err := p.ParseRpcToken()
 		if err != nil {
-			return result, err
+			return nil, err
 		}
 		result = append(result, s)
 		p.SkipWhiteSpaces()
+	}
+	if !p.Test(constants.RightBrace) {
+		return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Not found matching %c", constants.RightBrace)
 	}
 	p.Next()
 

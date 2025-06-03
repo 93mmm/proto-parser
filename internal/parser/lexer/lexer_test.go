@@ -141,3 +141,54 @@ func TestParser_SkipCurlyBraces(t *testing.T) {
 	t.Log(parser.CharNumber())
 	assert.True(t, parser.EOF())
 }
+
+func Test_Parser_SkipCurlyBraces(t *testing.T) {
+	type result struct {
+		ret bool
+		eof bool
+	}
+	tests := []struct {
+		name  string
+		input string
+		want  result
+	}{
+		{
+			"Ok",
+			"{}",
+			result{true, true},
+		}, {
+			"Ok",
+			"{{{{{}}}}}",
+			result{true, true},
+		}, {
+			"Ok",
+			"{{{{{}}}}}         ",
+			result{true, false},
+		}, {
+			"Not ok",
+			"{",
+			result{false, true},
+		}, {
+			"Not ok",
+			"{{{}}",
+			result{false, true},
+		}, {
+			"Not ok",
+			"{{{}}           ",
+			result{false, true},
+		}, {
+			"Not ok",
+			"{{{}}           ",
+			result{false, true},
+		},
+	}
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			lexer := newTestLexer(test.input)
+			t.Log(lexer.CharNumber())
+			
+			assert.Equal(t, test.want.ret, lexer.SkipCurlyBraces())
+			assert.Equal(t, test.want.eof, lexer.EOF())
+		})
+	}
+}
