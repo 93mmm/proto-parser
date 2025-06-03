@@ -9,13 +9,13 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestStringSource_ReadRunes(t *testing.T) {
+func Test_StringSource_ReadRunes(t *testing.T) {
 	content := "aaabbbccc"
 	source := NewStringSource(content)
 	compareStringSourceWithString(t, source, content)
 }
 
-func TestFileSource_ReadRunes(t *testing.T) {
+func Test_FileSource_ReadRunes(t *testing.T) {
 	content := "very long \n\t\n\ttest striiiiiiiiiiiiiiiiiiiiiiiiiiiiiiiing\t\n"
 	filename := createTmpFile(t, "tmp*.proto", content)
 	defer os.Remove(filename)

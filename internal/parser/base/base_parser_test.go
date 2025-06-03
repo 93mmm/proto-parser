@@ -7,7 +7,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func Test_Next(t *testing.T) {
+func Test_BaseParser_Next(t *testing.T) {
 	input := "test string"
 	parser := NewBaseParser(
 		source.NewStringSource(input),
@@ -17,7 +17,7 @@ func Test_Next(t *testing.T) {
 	}
 }
 
-func Test_Peek(t *testing.T) {
+func Test_BaseParser_Peek(t *testing.T) {
 	input := "test string"
 
 	parser := NewBaseParser(
@@ -30,7 +30,7 @@ func Test_Peek(t *testing.T) {
 	}
 }
 
-func Test_EOF(t *testing.T) {
+func Test_BaseParser_EOF(t *testing.T) {
 	input := "test string"
 
 	parser := NewBaseParser(
@@ -50,7 +50,7 @@ func Test_EOF(t *testing.T) {
 	assert.True(t, parser.EOF())
 }
 
-func Test_CurrentLineAndChar(t *testing.T) {
+func Test_BaseParser_CurrentLineAndChar(t *testing.T) {
 	type pos struct {
 		char int
 		line int

@@ -69,7 +69,7 @@ func runFailTokenTest(t *testing.T, parse parseXToken, tests []failTest) {
 	}
 }
 
-func Test_SyntaxToken_OK(t *testing.T) {
+func Test_TokenParser_SyntaxToken_OK(t *testing.T) {
 	res := result{
 		"proto3", constants.Syntax,
 	}
@@ -92,7 +92,7 @@ func Test_SyntaxToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseSyntaxToken, tests)
 }
 
-func Test_PackageToken_OK(t *testing.T) {
+func Test_TokenParser_PackageToken_OK(t *testing.T) {
 	res := result{
 		"example", constants.Package,
 	}
@@ -111,7 +111,7 @@ func Test_PackageToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParsePackageToken, tests)
 }
 
-func Test_ImportToken_OK(t *testing.T) {
+func Test_TokenParser_ImportToken_OK(t *testing.T) {
 	res := result{
 		"google/protobuf/timestamp.proto", constants.Import,
 	}
@@ -130,7 +130,7 @@ func Test_ImportToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseImportToken, tests)
 }
 
-func Test_OptionToken_OK(t *testing.T) {
+func Test_TokenParser_OptionToken_OK(t *testing.T) {
 	res := result{
 		"go_package", constants.Option,
 	}
@@ -149,7 +149,7 @@ func Test_OptionToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseOptionToken, tests)
 }
 
-func Test_ServiceToken_OK(t *testing.T) {
+func Test_TokenParser_ServiceToken_OK(t *testing.T) {
 	type serviceTokenTest struct {
 		name  string
 		input string
@@ -238,7 +238,7 @@ func Test_ServiceToken_OK(t *testing.T) {
 	}
 }
 
-func Test_RpcToken_OK(t *testing.T) {
+func Test_TokenParser_RpcToken_OK(t *testing.T) {
 	res := result{
 		"ExampleRPC", constants.Rpc,
 	}
@@ -261,7 +261,7 @@ func Test_RpcToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseRpcToken, tests)
 }
 
-func Test_EnumToken_OK(t *testing.T) {
+func Test_TokenParser_EnumToken_OK(t *testing.T) {
 	res := result{
 		"ExampleEnum", constants.Enum,
 	}
@@ -296,7 +296,7 @@ func Test_EnumToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseEnumToken, tests)
 }
 
-func Test_MessageToken_OK(t *testing.T) {
+func Test_TokenParser_MessageToken_OK(t *testing.T) {
 	res := result{
 		"ExampleRPCResponse", constants.Message,
 	}
@@ -328,7 +328,7 @@ func Test_MessageToken_OK(t *testing.T) {
 	runOkTokenTest(t, (*TokenParser).ParseMessageToken, tests)
 }
 
-func Test_SyntaxToken_FAIL(t *testing.T) {
+func Test_TokenParser_SyntaxToken_FAIL(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing equals",
@@ -353,7 +353,7 @@ func Test_SyntaxToken_FAIL(t *testing.T) {
 	runFailTokenTest(t, (*TokenParser).ParseSyntaxToken, tests)
 }
 
-func Test_PackageToken_FAIL(t *testing.T) {
+func Test_TokenParser_PackageToken_FAIL(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing semicolon",
@@ -375,7 +375,7 @@ func Test_PackageToken_FAIL(t *testing.T) {
 	runFailTokenTest(t, (*TokenParser).ParseSyntaxToken, tests)
 }
 
-func Test_ImportToken_FAIL(t *testing.T) {
+func Test_TokenParser_ImportToken_FAIL(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing semicolon",
@@ -394,7 +394,7 @@ func Test_ImportToken_FAIL(t *testing.T) {
 	runFailTokenTest(t, (*TokenParser).ParseImportToken, tests)
 }
 
-func Test_OptionToken_FAIL(t *testing.T) {
+func Test_TokenParser_OptionToken_FAIL(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing equals",
@@ -416,7 +416,7 @@ func Test_OptionToken_FAIL(t *testing.T) {
 	runFailTokenTest(t, (*TokenParser).ParseOptionToken, tests)
 }
 
-func Test_ServiceToken_Fail(t *testing.T) {
+func Test_TokenParser_ServiceToken_Fail(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing brace pair",
@@ -443,7 +443,7 @@ func Test_ServiceToken_Fail(t *testing.T) {
 	}
 }
 
-func Test_RpcToken_FAIL(t *testing.T) {
+func Test_TokenParser_RpcToken_FAIL(t *testing.T) {
 	tests := []failTest{
 		{
 			name:  "Missing semicolon",
