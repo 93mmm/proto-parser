@@ -7,38 +7,35 @@ import (
 )
 
 type Symbol struct {
-	name  string
-	kind  string // Stands for type, but type is reserved
-	line  int
-	start int
-	end   int
+	Name  string
+	Type  string
+	Line  int
+	Start int
+	End   int
 }
 
 func NewSymbol(name, kind string, line, start, end int) *Symbol {
 	return &Symbol{
-		name:  name,
-		kind:  kind,
-		line:  line,
-		start: start,
-		end:   end,
+		Name:  name,
+		Type:  kind,
+		Line:  line,
+		Start: start,
+		End:   end,
 	}
 }
 
 func (s *Symbol) String() string {
-	actualType := s.kind
+	actualType := s.Type
 	if actualType == token.Rpc {
 		actualType = "method"
 	}
 
 	return fmt.Sprintf(
 		"%v %v %v:%v-%v",
-		s.name,
+		s.Name,
 		actualType,
-		s.line,
-		s.start,
-		s.end,
+		s.Line,
+		s.Start,
+		s.End,
 	)
 }
-
-func (s *Symbol) Name() string { return s.name }
-func (s *Symbol) Type() string { return s.kind }

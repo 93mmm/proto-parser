@@ -8,13 +8,14 @@ clean:
 
 test:
 	@go test -count=1 ./internal/...
+	@go test -count=1 ./tests/...
 
 docker_build:
-	docker build . -t protosym -f internal/deploy/Dockerfile
+	@docker build . -t protosym -f internal/deploy/Dockerfile
 
 # FIXME: путь к fila - не relative
 docker_run: docker_build
-	docker run --rm -it protosym ./protosym /app/$(file)
+	@docker run --rm -it protosym ./protosym /app/$(file)
 
 docker_test: docker_build
-	docker run --rm -it protosym make test
+	@docker run --rm -it protosym make test

@@ -33,8 +33,8 @@ func assertResult(t *testing.T, expected result, actual *symbols.Symbol, err err
 	if actual == nil {
 		return
 	}
-	assert.Equal(t, expected.name, actual.Name())
-	assert.Equal(t, expected.kind, actual.Type())
+	assert.Equal(t, expected.name, actual.Name)
+	assert.Equal(t, expected.kind, actual.Type)
 }
 
 func runOkTokenTest(t *testing.T, parseFunc parseXToken, tests []okTest) {
