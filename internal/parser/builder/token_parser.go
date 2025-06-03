@@ -181,7 +181,9 @@ func (p *TokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
 		return nil, err
 	}
-	p.ExtractKeyword()
+	if returns, _ := p.ExtractKeyword(); returns != "returns" {
+		return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Wrong keyword name")
+	}
 	if _, err := p.ExtractNameBetweenParentheses(); err != nil {
 		return nil, err
 	}

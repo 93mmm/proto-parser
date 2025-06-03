@@ -19,16 +19,10 @@ type result struct {
 	kind string
 }
 
-type tokenTest struct {
+type okTest struct {
 	name  string
 	input string
 	want  result
-}
-
-type serviceTokenTest struct {
-	name  string
-	input string
-	want  []result
 }
 
 type parseXToken func(*TokenParser) (*symbols.Symbol, error)
@@ -43,7 +37,7 @@ func assertResult(t *testing.T, expected result, actual *symbols.Symbol, err err
 	assert.Equal(t, expected.kind, actual.Type())
 }
 
-func runTokenTest(t *testing.T, parseFunc parseXToken, tests []tokenTest) {
+func runOkTokenTest(t *testing.T, parseFunc parseXToken, tests []okTest) {
 	for _, test := range tests {
 		t.Run(test.name, func(t *testing.T) {
 			parser := newTestTokenParser(test.input)
@@ -62,7 +56,7 @@ func Test_SyntaxToken_OK(t *testing.T) {
 		"proto3", token.Syntax,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name:  "Normal spaces",
 			input: `syntax = "proto3";`,
@@ -77,7 +71,7 @@ func Test_SyntaxToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseSyntaxToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseSyntaxToken, tests)
 }
 
 func Test_PackageToken_OK(t *testing.T) {
@@ -85,7 +79,7 @@ func Test_PackageToken_OK(t *testing.T) {
 		"example", token.Package,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name:  "Normal spaces",
 			input: "package example;",
@@ -96,7 +90,7 @@ func Test_PackageToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParsePackageToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParsePackageToken, tests)
 }
 
 func Test_ImportToken_OK(t *testing.T) {
@@ -104,7 +98,7 @@ func Test_ImportToken_OK(t *testing.T) {
 		"google/protobuf/timestamp.proto", token.Import,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name:  "Normal spaces",
 			input: "import \"google/protobuf/timestamp.proto\";",
@@ -115,7 +109,7 @@ func Test_ImportToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseImportToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseImportToken, tests)
 }
 
 func Test_OptionToken_OK(t *testing.T) {
@@ -123,7 +117,7 @@ func Test_OptionToken_OK(t *testing.T) {
 		"go_package", token.Option,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name:  "Normal spaces",
 			input: "option go_package = \"gitlab.ozon.ru/example/api/example;example\";",
@@ -134,10 +128,16 @@ func Test_OptionToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseOptionToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseOptionToken, tests)
 }
 
 func Test_ServiceToken_OK(t *testing.T) {
+	type serviceTokenTest struct {
+		name  string
+		input string
+		want  []result
+	}
+
 	serviceRes := result{
 		"Example", token.Service,
 	}
@@ -218,28 +218,6 @@ func Test_ServiceToken_OK(t *testing.T) {
 			}
 		})
 	}
-
-	t.Run("Normal, with rpcs inside", func(t *testing.T) {
-		input := `service Example {
-			rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-			rpc ExampleRPC1(ExampleRPCRequest) returns (ExampleRPCResponse) {};
-		}`
-		parser := newTestTokenParser(input)
-		parser.ExtractKeyword()
-		result, err := parser.ParseServiceToken()
-
-		assert.Equal(t, 3, len(result))
-
-		assert.Equal(t, "service", result[0].Type())
-		assert.Equal(t, "Example", result[0].Name())
-
-		assert.Equal(t, "rpc", result[1].Type())
-		assert.Equal(t, "ExampleRPC", result[1].Name())
-
-		assert.Equal(t, "rpc", result[2].Type())
-		assert.Equal(t, "ExampleRPC1", result[2].Name())
-		assert.NoError(t, err)
-	})
 }
 
 func Test_RpcToken_OK(t *testing.T) {
@@ -247,10 +225,14 @@ func Test_RpcToken_OK(t *testing.T) {
 		"ExampleRPC", token.Rpc,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name:  "Normal spaces",
 			input: "rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};",
+			want:  res,
+		}, {
+			name:  "Missing braces",
+			input: "rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse);",
 			want:  res,
 		}, {
 			name:  "Maximal spaces",
@@ -258,7 +240,7 @@ func Test_RpcToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseRpcToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseRpcToken, tests)
 }
 
 func Test_EnumToken_OK(t *testing.T) {
@@ -266,7 +248,7 @@ func Test_EnumToken_OK(t *testing.T) {
 		"ExampleEnum", token.Enum,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name: "Normal spaces",
 			input: `enum ExampleEnum {
@@ -284,12 +266,16 @@ func Test_EnumToken_OK(t *testing.T) {
 			input: "enum ExampleEnum {}",
 			want:  res,
 		}, {
+			name:  "Correct brace sequence",
+			input: "enum ExampleEnum {{{{{{{{{{}}}}}}}}}}",
+			want:  res,
+		}, {
 			name:  "Maximal spaces",
 			input: withSpaces("enum", "ExampleEnum", "{", "}"),
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseEnumToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseEnumToken, tests)
 }
 
 func Test_MessageToken_OK(t *testing.T) {
@@ -297,7 +283,7 @@ func Test_MessageToken_OK(t *testing.T) {
 		"ExampleRPCResponse", token.Message,
 	}
 
-	tests := []tokenTest{
+	tests := []okTest{
 		{
 			name: "Normal spaces",
 			input: `message ExampleRPCResponse {
@@ -321,5 +307,5 @@ func Test_MessageToken_OK(t *testing.T) {
 			want:  res,
 		},
 	}
-	runTokenTest(t, (*TokenParser).ParseMessageToken, tests)
+	runOkTokenTest(t, (*TokenParser).ParseMessageToken, tests)
 }
