@@ -37,6 +37,9 @@ func (p *Lexer) ExtractKeyword() (string, error) {
 	if len(keyword) == 0 {
 		return "", errors.NewError(p.LineNumber(), p.CharNumber(), "Expected keyword, found %c", p.CurrentChar())
 	}
+	if !p.TestWhiteSpace() && !p.EOF() {
+		return "", errors.NewError(p.LineNumber(), p.CharNumber(), "Expected end of keyword, found %c", p.CurrentChar())
+	}
 	return string(keyword), nil
 }
 

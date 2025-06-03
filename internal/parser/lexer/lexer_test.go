@@ -7,54 +7,64 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestParser_ExtractKeyword(t *testing.T) {
-	t.Run("Regular string", func(t *testing.T) {
-		input := "one two three\n\t\n four five!"
-		parser := newTestLexer(input)
-		expected := []string{
-			"one", "two", "three", "four", "five",
-		}
+func Test_ExtractKeyword(t *testing.T) {
+	tests := []struct {
+		name  string
+		input string
+		want  string
+		err   bool
+	}{
+		{
+			"Normal parsing",
+			"input",
+			"input",
+			false,
+		}, {
+			"Empty string",
+			"",
+			"",
+			true,
+		}, {
+			"Invalid start",
+			",input",
+			"",
+			true,
+		}, {
+			"Invalid keyword camelCase",
+			"helloEveryone",
+			"",
+			true,
+		}, {
+			"Invalid keyword PascalCase",
+			"HelloEveryone",
+			"",
+			true,
+		}, {
+			"Invalid keyword snake_case",
+			"hello_everyone",
+			"",
+			true,
+		}, {
+			"Invalid keyword number in between",
+			"hello4everyone",
+			"",
+			true,
+		},
+	}
 
-		for _, e := range expected {
-			actual, err := parser.ExtractKeyword()
-			assert.Equal(t, e, actual)
-			assert.NoError(t, err)
-			parser.SkipWhiteSpaces()
-		}
-		actual, err := parser.ExtractKeyword()
-		assert.Equal(t, "", actual)
-		assert.Error(t, err)
-	})
+	for _, test := range tests {
+		t.Run(test.name, func(t *testing.T) {
+			lexer := newTestLexer(test.input)
+			actual, err := lexer.ExtractKeyword()
 
-	t.Run("Empty string", func(t *testing.T) {
-		input := ""
-		expected := ""
-		parser := newTestLexer(input)
-
-		actual, err := parser.ExtractKeyword()
-		assert.Equal(t, expected, actual)
-		assert.Error(t, err)
-	})
-
-	t.Run("Not keyword", func(t *testing.T) {
-		input := ",hello"
-		expected := ""
-		parser := newTestLexer(input)
-
-		actual, err := parser.ExtractKeyword()
-		assert.Equal(t, expected, actual)
-		assert.Error(t, err)
-	})
-
-	t.Run("Not keyword", func(t *testing.T) { // TODO: edit
-		input := "hello_world"
-		expected := "hello"
-		parser := newTestLexer(input)
-
-		actual, err := parser.ExtractKeyword()
-		assert.Equal(t, expected, actual)
-		assert.NoError(t, err)
-	})
+			assert.Equal(t, test.want, actual)
+			if test.err {
+				assert.Error(t, err)
+			} else {
+				assert.NoError(t, err)
+			}
+		})
+	}
 }
 
 func TestParser_ExtractQuotedString(t *testing.T) {
@@ -186,7 +196,7 @@ func Test_Parser_SkipCurlyBraces(t *testing.T) {
 		t.Run(test.name, func(t *testing.T) {
 			lexer := newTestLexer(test.input)
 			t.Log(lexer.CharNumber())
-			
+
 			assert.Equal(t, test.want.ret, lexer.SkipCurlyBraces())
 			assert.Equal(t, test.want.eof, lexer.EOF())
 		})
