@@ -3,6 +3,7 @@ package lexer
 import (
 	"github.com/93mmm/proto-parser/internal/errors"
 	"github.com/93mmm/proto-parser/internal/parser/base"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/93mmm/proto-parser/internal/parser/source"
 )
 
@@ -55,16 +56,16 @@ func (p *Lexer) ExtractName() (string, error) {
 }
 
 func (p *Lexer) ExtractQuotedString() (string, error) {
-	if !p.Peek('"') {
+	if !p.Peek(constants.Quote) {
 		return "", errors.NewError(p.LineNumber(), p.CharNumber(), "Quote expected, found %c", p.CurrentChar())
 	}
 
 	word := make([]rune, 0, 30)
 	for !p.EOF() {
 		switch {
-		case p.Peek('"'):
+		case p.Peek(constants.Quote):
 			return string(word), nil
-		case p.Test('\n'):
+		case p.Test(constants.NextLine):
 			return "", errors.NewError(p.LineNumber(), p.CharNumber(), "Not found end of quoted string, found \\n")
 		default:
 			word = append(word, p.Next())
@@ -76,7 +77,7 @@ func (p *Lexer) ExtractQuotedString() (string, error) {
 // TODO: replace by skipping, NOT extraction
 func (p *Lexer) ExtractNameBetweenParentheses() (string, error) {
 	p.SkipWhiteSpaces()
-	if err := p.PeekSymbol('('); err != nil {
+	if err := p.PeekSymbol(constants.LeftParen); err != nil {
 		return "", err
 	}
 	p.SkipWhiteSpaces()
@@ -85,7 +86,7 @@ func (p *Lexer) ExtractNameBetweenParentheses() (string, error) {
 		return "", err
 	}
 	p.SkipWhiteSpaces()
-	if err := p.PeekSymbol(')'); err != nil {
+	if err := p.PeekSymbol(constants.RightParen); err != nil {
 		return "", err
 	}
 
@@ -120,16 +121,17 @@ func (p *Lexer) SkipUntilMatch(symbol rune) {
 	}
 }
 
+// FIXME: bug, if eof reached and openCounter != 0 we don't throw error/return false
 func (p *Lexer) SkipCurlyBraces() {
-	p.SkipUntilMatch('{')
+	p.SkipUntilMatch(constants.LeftBrace)
 	p.Next()
 	openCounter := 1
 	for !p.EOF() && openCounter != 0 {
 		switch {
-		case p.Test('}'):
+		case p.Test(constants.RightBrace):
 			p.Next()
 			openCounter--
-		case p.Test('{'):
+		case p.Test(constants.LeftBrace):
 			p.Next()
 			openCounter++
 		default:

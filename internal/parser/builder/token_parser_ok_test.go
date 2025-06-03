@@ -5,7 +5,7 @@ import (
 	"testing"
 
 	"github.com/93mmm/proto-parser/internal/symbols"
-	"github.com/93mmm/proto-parser/internal/token"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -53,7 +53,7 @@ func runOkTokenTest(t *testing.T, parseFunc parseXToken, tests []okTest) {
 
 func Test_SyntaxToken_OK(t *testing.T) {
 	res := result{
-		"proto3", token.Syntax,
+		"proto3", constants.Syntax,
 	}
 
 	tests := []okTest{
@@ -76,7 +76,7 @@ func Test_SyntaxToken_OK(t *testing.T) {
 
 func Test_PackageToken_OK(t *testing.T) {
 	res := result{
-		"example", token.Package,
+		"example", constants.Package,
 	}
 
 	tests := []okTest{
@@ -95,7 +95,7 @@ func Test_PackageToken_OK(t *testing.T) {
 
 func Test_ImportToken_OK(t *testing.T) {
 	res := result{
-		"google/protobuf/timestamp.proto", token.Import,
+		"google/protobuf/timestamp.proto", constants.Import,
 	}
 
 	tests := []okTest{
@@ -114,7 +114,7 @@ func Test_ImportToken_OK(t *testing.T) {
 
 func Test_OptionToken_OK(t *testing.T) {
 	res := result{
-		"go_package", token.Option,
+		"go_package", constants.Option,
 	}
 
 	tests := []okTest{
@@ -139,10 +139,10 @@ func Test_ServiceToken_OK(t *testing.T) {
 	}
 
 	serviceRes := result{
-		"Example", token.Service,
+		"Example", constants.Service,
 	}
 	rpcRes := result{
-		"ExampleRPC", token.Rpc,
+		"ExampleRPC", constants.Rpc,
 	}
 
 	tests := []serviceTokenTest{
@@ -222,7 +222,7 @@ func Test_ServiceToken_OK(t *testing.T) {
 
 func Test_RpcToken_OK(t *testing.T) {
 	res := result{
-		"ExampleRPC", token.Rpc,
+		"ExampleRPC", constants.Rpc,
 	}
 
 	tests := []okTest{
@@ -245,7 +245,7 @@ func Test_RpcToken_OK(t *testing.T) {
 
 func Test_EnumToken_OK(t *testing.T) {
 	res := result{
-		"ExampleEnum", token.Enum,
+		"ExampleEnum", constants.Enum,
 	}
 
 	tests := []okTest{
@@ -280,7 +280,7 @@ func Test_EnumToken_OK(t *testing.T) {
 
 func Test_MessageToken_OK(t *testing.T) {
 	res := result{
-		"ExampleRPCResponse", token.Message,
+		"ExampleRPCResponse", constants.Message,
 	}
 
 	tests := []okTest{

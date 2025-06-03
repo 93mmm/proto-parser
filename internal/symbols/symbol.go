@@ -3,7 +3,7 @@ package symbols
 import (
 	"fmt"
 
-	"github.com/93mmm/proto-parser/internal/token"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 )
 
 type Symbol struct {
@@ -26,7 +26,7 @@ func NewSymbol(name, kind string, line, start, end int) *Symbol {
 
 func (s *Symbol) String() string {
 	actualType := s.Type
-	if actualType == token.Rpc {
+	if actualType == constants.Rpc {
 		actualType = "method"
 	}
 

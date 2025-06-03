@@ -1,6 +1,10 @@
 package source
 
-import "io"
+import (
+	"io"
+
+	"github.com/93mmm/proto-parser/internal/parser/constants"
+)
 
 type stringSource struct {
 	src []rune
@@ -15,7 +19,7 @@ func NewStringSource(s string) *stringSource {
 
 func (s *stringSource) Next() (rune, error) {
 	if s.pos >= len(s.src) {
-		return EOF, io.EOF
+		return constants.EOF, io.EOF
 	}
 	r := s.src[s.pos]
 	s.pos++

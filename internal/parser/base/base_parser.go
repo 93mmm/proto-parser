@@ -3,7 +3,7 @@ package base
 import (
 	"unicode"
 
-	"github.com/93mmm/proto-parser/internal/parser/source"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 )
 
 type Source interface {
@@ -41,7 +41,7 @@ func (p *BaseParser) Next() rune {
 	next, err := p.src.Next()
 	if err != nil {
 		p.eof = true
-		p.currentChar = source.EOF
+		p.currentChar = constants.EOF
 	}
 
 	p.incrementCharOrLineNumber(next)
@@ -57,7 +57,7 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 	if p.EOF() {
 		return
 	}
-	if c == '\n' {
+	if c == constants.NextLine {
 		p.lineNumber++
 		p.charNumber = 0
 		return
@@ -81,11 +81,11 @@ func (p *BaseParser) TestKeyword() bool {
 func (p *BaseParser) TestName() bool {
 	return unicode.IsLetter(p.currentChar) ||
 		unicode.IsDigit(p.currentChar) ||
-		p.currentChar == '_'
+		p.currentChar == constants.Underscore
 }
 
 func (p *BaseParser) TestWhiteSpace() bool {
-	return p.currentChar == ' ' ||
-		p.currentChar == '\t' ||
-		p.currentChar == '\n'
+	return p.currentChar == constants.Space ||
+		p.currentChar == constants.Tab ||
+		p.currentChar == constants.NextLine
 }

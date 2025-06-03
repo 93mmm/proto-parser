@@ -9,7 +9,7 @@ import (
 	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
-	"github.com/93mmm/proto-parser/internal/token"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -36,26 +36,26 @@ func runTestFromFile(t *testing.T, file string, expected []*symbols.Symbol) {
 
 func Test_Integration_Full(t *testing.T) {
 	runTestFromFile(t, "testdata/full.proto", []*symbols.Symbol{
-		{Name: "proto3", Type: token.Syntax, Line: 1, Start: 10, End: 18},
-		{Name: "example", Type: token.Package, Line: 3, Start: 9, End: 16},
-		{Name: "google/protobuf/timestamp.proto", Type: token.Import, Line: 5, Start: 8, End: 41},
-		{Name: "go_package", Type: token.Option, Line: 7, Start: 8, End: 18},
-		{Name: "Example", Type: token.Service, Line: 9, Start: 9, End: 16},
-		{Name: "ExampleRPC", Type: token.Rpc, Line: 10, Start: 7, End: 17},
-		{Name: "ExampleEnum", Type: token.Enum, Line: 13, Start: 6, End: 17},
-		{Name: "ExampleRPCRequest", Type: token.Message, Line: 19, Start: 9, End: 26},
-		{Name: "ExampleRPCResponse", Type: token.Message, Line: 26, Start: 9, End: 27},
+		{Name: "proto3", Type: constants.Syntax, Line: 1, Start: 10, End: 18},
+		{Name: "example", Type: constants.Package, Line: 3, Start: 9, End: 16},
+		{Name: "google/protobuf/timestamp.proto", Type: constants.Import, Line: 5, Start: 8, End: 41},
+		{Name: "go_package", Type: constants.Option, Line: 7, Start: 8, End: 18},
+		{Name: "Example", Type: constants.Service, Line: 9, Start: 9, End: 16},
+		{Name: "ExampleRPC", Type: constants.Rpc, Line: 10, Start: 7, End: 17},
+		{Name: "ExampleEnum", Type: constants.Enum, Line: 13, Start: 6, End: 17},
+		{Name: "ExampleRPCRequest", Type: constants.Message, Line: 19, Start: 9, End: 26},
+		{Name: "ExampleRPCResponse", Type: constants.Message, Line: 26, Start: 9, End: 27},
 	})
 }
 
 func Test_Integration_Syntax(t *testing.T) {
 	runTestFromFile(t, "testdata/syntax.proto", []*symbols.Symbol{
-		{Name: "proto3", Type: token.Syntax, Line: 1, Start: 10, End: 18},
+		{Name: "proto3", Type: constants.Syntax, Line: 1, Start: 10, End: 18},
 	})
 }
 
 func Test_Integration_Package(t *testing.T) {
 	runTestFromFile(t, "testdata/package.proto", []*symbols.Symbol{
-		{Name: "example", Type: token.Package, Line: 1, Start: 9, End: 16},
+		{Name: "example", Type: constants.Package, Line: 1, Start: 9, End: 16},
 	})
 }

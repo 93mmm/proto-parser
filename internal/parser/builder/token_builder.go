@@ -2,17 +2,17 @@ package builder
 
 import (
 	"github.com/93mmm/proto-parser/internal/symbols"
-	"github.com/93mmm/proto-parser/internal/token"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 )
 
 var tokenBuilders = map[string]TokenBuilder{
-	token.Syntax:  SyntaxToken{},
-	token.Package: PackageToken{},
-	token.Import:  ImportToken{},
-	token.Option:  OptionToken{},
-	token.Service: ServiceToken{},
-	token.Enum:    EnumToken{},
-	token.Message: MessageToken{},
+	constants.Syntax:  SyntaxToken{},
+	constants.Package: PackageToken{},
+	constants.Import:  ImportToken{},
+	constants.Option:  OptionToken{},
+	constants.Service: ServiceToken{},
+	constants.Enum:    EnumToken{},
+	constants.Message: MessageToken{},
 }
 
 func GetBuilder(token string) (TokenBuilder, bool) {

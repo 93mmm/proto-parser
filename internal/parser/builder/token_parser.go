@@ -3,6 +3,7 @@ package builder
 import (
 	"github.com/93mmm/proto-parser/internal/errors"
 	"github.com/93mmm/proto-parser/internal/parser/base"
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/93mmm/proto-parser/internal/parser/lexer"
 	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
@@ -29,7 +30,7 @@ func newTestTokenParser(in string) *TokenParser {
 
 // syntax = "proto3";
 func (p *TokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
-	if err := p.PeekSymbol('='); err != nil {
+	if err := p.PeekSymbol(constants.Equals); err != nil {
 		return nil, err
 	}
 
@@ -43,7 +44,7 @@ func (p *TokenParser) ParseSyntaxToken() (*symbols.Symbol, error) {
 
 	end := p.CharNumber()
 
-	if err := p.PeekSymbol(';'); err != nil {
+	if err := p.PeekSymbol(constants.Semicolon); err != nil {
 		return nil, err
 	}
 
@@ -64,7 +65,7 @@ func (p *TokenParser) ParsePackageToken() (*symbols.Symbol, error) {
 	}
 
 	end := p.CharNumber()
-	if err := p.PeekSymbol(';'); err != nil {
+	if err := p.PeekSymbol(constants.Semicolon); err != nil {
 		return nil, err
 	}
 	s := p.factory.NewPackageSymbol(
@@ -84,7 +85,7 @@ func (p *TokenParser) ParseImportToken() (*symbols.Symbol, error) {
 	}
 
 	end := p.CharNumber()
-	if err := p.PeekSymbol(';'); err != nil {
+	if err := p.PeekSymbol(constants.Semicolon); err != nil {
 		return nil, err
 	}
 	s := p.factory.NewImportSymbol(
@@ -105,7 +106,7 @@ func (p *TokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 	}
 
 	end := p.CharNumber()
-	if err := p.PeekSymbol('='); err != nil {
+	if err := p.PeekSymbol(constants.Equals); err != nil {
 		return nil, err
 	}
 
@@ -114,7 +115,7 @@ func (p *TokenParser) ParseOptionToken() (*symbols.Symbol, error) {
 		return nil, err
 	}
 
-	if err := p.PeekSymbol(';'); err != nil {
+	if err := p.PeekSymbol(constants.Semicolon); err != nil {
 		return nil, err
 	}
 	s := p.factory.NewOptionSymbol(
@@ -138,7 +139,7 @@ func (p *TokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	end := p.CharNumber()
 	p.SkipWhiteSpaces()
 
-	if err := p.PeekSymbol('{'); err != nil {
+	if err := p.PeekSymbol(constants.LeftBrace); err != nil {
 		return nil, err
 	}
 
@@ -149,7 +150,7 @@ func (p *TokenParser) ParseServiceToken() ([]*symbols.Symbol, error) {
 	)
 	result := make([]*symbols.Symbol, 0, 10)
 	result = append(result, s)
-	for !p.Test('}') && !p.EOF() {
+	for !p.Test(constants.RightBrace) && !p.EOF() {
 		keyword, _ := p.ExtractKeyword()
 		if keyword != "rpc" {
 			return result, errors.NewError(p.LineNumber(), p.CharNumber(), "Unexpected keyword %s found inside %s", keyword, s)
@@ -188,8 +189,8 @@ func (p *TokenParser) ParseRpcToken() (*symbols.Symbol, error) {
 		return nil, err
 	}
 
-	p.SkipUntilMatch(';')
-	if err := p.PeekSymbol(';'); err != nil {
+	p.SkipUntilMatch(constants.Semicolon)
+	if err := p.PeekSymbol(constants.Semicolon); err != nil {
 		return nil, err
 	}
 	s := p.factory.NewRpcSymbol(

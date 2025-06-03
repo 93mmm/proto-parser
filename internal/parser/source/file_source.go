@@ -3,6 +3,8 @@ package source
 import (
 	"bufio"
 	"os"
+
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 )
 
 type fileSource struct {
@@ -27,7 +29,7 @@ func NewFileSource(filename string) (*fileSource, error) {
 func (s *fileSource) Next() (rune, error) {
 	r, _, err := s.src.ReadRune()
 	if err != nil {
-		return EOF, err
+		return constants.EOF, err
 	}
 	return r, nil
 }

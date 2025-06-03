@@ -1,4 +1,4 @@
-package token
+package constants
 
 const (
 	Syntax  = "syntax"

@@ -3,6 +3,7 @@ package lexer
 import (
 	"testing"
 
+	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -121,9 +122,9 @@ func TestParser_SkipUntilNextLine(t *testing.T) {
 	parser := newTestLexer(input)
 
 	parser.ExtractKeyword()
-	parser.SkipUntilMatch(':')
+	parser.SkipUntilMatch(constants.Colon)
 
-	assert.True(t, parser.Test(':'))
+	assert.True(t, parser.Test(constants.Colon))
 
 	parser.Next()
 

@@ -1,6 +1,6 @@
 package symbols
 
-import "github.com/93mmm/proto-parser/internal/token"
+import "github.com/93mmm/proto-parser/internal/parser/constants"
 
 type SymbolFactory interface {
 	NewSyntaxSymbol(name string, line, start, end int) *Symbol
@@ -21,48 +21,48 @@ func NewSymbolFactory() *defaultSymbolFactory {
 
 func (_ defaultSymbolFactory) NewSyntaxSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Syntax, line, start, end,
+		name, constants.Syntax, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewPackageSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Package, line, start, end,
+		name, constants.Package, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewImportSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Import, line, start, end,
+		name, constants.Import, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewOptionSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Option, line, start, end,
+		name, constants.Option, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewServiceSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Service, line, start, end,
+		name, constants.Service, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewRpcSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Rpc, line, start, end,
+		name, constants.Rpc, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewEnumSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Enum, line, start, end,
+		name, constants.Enum, line, start, end,
 	)
 }
 
 func (_ defaultSymbolFactory) NewMessageSymbol(name string, line, start, end int) *Symbol {
 	return NewSymbol(
-		name, token.Message, line, start, end,
+		name, constants.Message, line, start, end,
 	)
 }
