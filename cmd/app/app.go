@@ -1,52 +1,46 @@
 package main
 
 import (
-	"errors"
 	"fmt"
 
 	"github.com/93mmm/proto-parser/internal/parser"
-	"github.com/93mmm/proto-parser/internal/source"
+	base "github.com/93mmm/proto-parser/internal/parser/baseparser"
+	"github.com/93mmm/proto-parser/internal/parser/builder"
+	"github.com/93mmm/proto-parser/internal/parser/lexer"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 	"github.com/93mmm/proto-parser/internal/symbols"
 )
 
-func filterPrint(elements []*symbols.Symbol, ok func(*symbols.Symbol) bool) {
-	for _, el := range elements {
-		if ok(el) {
-			fmt.Println(el)
-		}
+var filterMap = map[string]struct{}{
+	"import":  {},
+	"service": {},
+	"rpc":     {},
+	"enum":    {},
+	"message": {},
+}
+
+func filterPrint(el *symbols.Symbol) {
+	if _, ok := filterMap[el.Type()]; ok {
+		fmt.Println(el)
 	}
 }
 
-func RunParser(docs []string) error {
-	filter := func() func(*symbols.Symbol) bool {
-		filterMap := map[string]struct{}{
-			"import":  {},
-			"service": {},
-			"rpc":     {},
-			"enum":    {},
-			"message": {},
-		}
-		return func(s *symbols.Symbol) bool {
-			_, ok := filterMap[s.Type()]
-			return ok
-		}
+func RunParser(document string) error {
+	src, err := source.NewFileSource(document)
+	if err != nil {
+		return err
 	}
-	var errs []error
-
-	for _, document := range docs {
-		file, err := source.NewFileSource(document)
-		if err != nil {
-			errs = append(errs, err)
-			continue
-		}
-		defer file.Close()
-
-		parsed, err := parser.NewParser(file).ParseDocument()
-		if err != nil {
-			fmt.Printf("An error occured while parsing %v: %v", document, err)
-		}
-		filterPrint(parsed, filter())
+	defer src.Close()
+	bp := base.NewBaseParser(src)
+	l := lexer.NewLexer(bp)
+	pp := builder.NewTokenParser(l)
+	parsed, err := parser.NewParser(pp).ParseDocument()
+	if err != nil {
+		return err
 	}
 
-	return errors.Join(errs...)
+	for _, element := range parsed {
+		filterPrint(element)
+	}
+	return nil
 }

@@ -7,8 +7,8 @@ import (
 )
 
 func main() {
-	docs := flags.DocPaths()
-	if err := RunParser(docs); err != nil {
+	path := flags.DocPathOrDie()
+	if err := RunParser(path); err != nil {
 		fmt.Println(err)
 	}
 }

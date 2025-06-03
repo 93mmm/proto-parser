@@ -1,9 +1,9 @@
 package parser
 
 import (
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/errors"
+	"github.com/93mmm/proto-parser/internal/parser/builder"
 	"github.com/93mmm/proto-parser/internal/symbols"
-	"github.com/93mmm/proto-parser/internal/token"
 )
 
 type Parser interface {
@@ -11,71 +11,34 @@ type Parser interface {
 }
 
 type parser struct {
-	protoParser
+	*builder.TokenParser
 }
 
-var _ Parser = (*parser)(nil)
+type Source interface {
+	Next() (rune, error)
+}
 
-func NewParser(src source.Source) Parser {
+func NewParser(pp *builder.TokenParser) Parser {
 	return &parser{
-		protoParser: *newProtoParser(src),
+		TokenParser: pp,
 	}
 }
 
 func (p *parser) ParseDocument() ([]*symbols.Symbol, error) {
-	symbols := make([]*symbols.Symbol, 0, 10)
+	syms := symbols.NewCollector(10)
 
 	for !p.EOF() {
-		word, err := p.extractKeyword()
+		keyword, err := p.ExtractKeyword()
 		if err != nil {
 			return nil, err
 		}
-
-		switch word {
-		case token.Syntax:
-			p, err := p.ParseSyntaxToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
-		case token.Package:
-			p, err := p.ParsePackageToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
-		case token.Import:
-			p, err := p.ParseImportToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
-		case token.Option:
-			p, err := p.ParseOptionToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
-		case token.Service:
-			p, err := p.ParseServiceToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p...)
-		case token.Enum:
-			p, err := p.ParseEnumToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
-		case token.Message:
-			p, err := p.ParseMessageToken()
-			if err != nil {
-				return nil, err
-			}
-			symbols = append(symbols, p)
+		b, ok := builder.GetBuilder(keyword)
+		if !ok {
+			return nil, errors.NewError(p.LineNumber(), p.CharNumber(), "Invalid keyword received")
 		}
-		p.skipWhiteSpaces()
+		err = b.Parse(p.TokenParser, syms)
+		p.SkipWhiteSpaces()
 	}
-	return symbols, nil
+
+	return syms.All(), nil
 }

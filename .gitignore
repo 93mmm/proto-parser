@@ -27,3 +27,5 @@ go.work.sum
 # build files
 protosym
 
+# obsidian dotfiles
+.obsidian/

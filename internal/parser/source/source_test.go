@@ -12,7 +12,7 @@ import (
 func TestStringSource_ReadRunes(t *testing.T) {
 	content := "aaabbbccc"
 	source := NewStringSource(content)
-	compareSourceWithString(t, source, content)
+	compareStringSourceWithString(t, source, content)
 }
 
 func TestFileSource_ReadRunes(t *testing.T) {
@@ -26,7 +26,7 @@ func TestFileSource_ReadRunes(t *testing.T) {
 	}
 	defer source.Close()
 
-	compareSourceWithString(t, source, content)
+	compareFileSourceWithString(t, source, content)
 }
 
 /*
@@ -50,7 +50,32 @@ func createTmpFile(t *testing.T, filename string, data string) string {
 	return file.Name()
 }
 
-func compareSourceWithString(t *testing.T, src Source, data string) {
+func compareStringSourceWithString(t *testing.T, src *stringSource, data string) {
+	t.Helper()
+	var actual []rune
+	for {
+		r, err := src.Next()
+		if err == io.EOF {
+			break
+		}
+		if err != nil {
+			t.Fatalf("unexpected error: %v", err)
+		}
+		actual = append(actual, r)
+	}
+
+	assert.Equal(
+		t,
+		[]rune(data),
+		actual,
+	)
+
+	r, err := src.Next()
+	assert.Zero(t, r)
+	assert.True(t, errors.Is(err, io.EOF))
+}
+
+func compareFileSourceWithString(t *testing.T, src *fileSource, data string) {
 	t.Helper()
 	var actual []rune
 	for {

@@ -7,8 +7,6 @@ type stringSource struct {
 	pos int
 }
 
-var _ Source = (*stringSource)(nil)
-
 func NewStringSource(s string) *stringSource {
 	return &stringSource{
 		src: []rune(s),

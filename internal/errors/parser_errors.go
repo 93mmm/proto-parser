@@ -1,4 +1,4 @@
-package parser
+package errors
 
 import "fmt"
 
@@ -17,10 +17,11 @@ func (e *ParserError) Error() string {
 	)
 }
 
-func NewParserError(msg string, line int, char int) *ParserError {
+func NewError(line int, char int, msg string, args ...any) *ParserError {
 	return &ParserError{
-		message:    msg,
+		message: fmt.Sprintf(msg, args...),
 		lineNumber: line,
 		charNumber: char,
 	}
 }
+

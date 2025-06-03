@@ -1,0 +1,11 @@
+# Git files
+LICENSE
+README.md
+.git/
+.gitignore
+
+# BLOB aboba
+protosym
+
+# obsidian
+.obsidian/

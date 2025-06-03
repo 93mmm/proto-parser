@@ -1,20 +1,24 @@
-package baseparser
+package base
 
 import (
 	"unicode"
 
-	"github.com/93mmm/proto-parser/internal/source"
+	"github.com/93mmm/proto-parser/internal/parser/source"
 )
 
+type Source interface {
+	Next() (rune, error)
+}
+
 type BaseParser struct {
-	src         source.Source
+	src         Source
 	currentChar rune
 	eof         bool
 	lineNumber  int
 	charNumber  int
 }
 
-func NewBaseParser(src source.Source) *BaseParser {
+func NewBaseParser(src Source) *BaseParser {
 	p := &BaseParser{
 		src:        src,
 		lineNumber: 1,
@@ -24,8 +28,6 @@ func NewBaseParser(src source.Source) *BaseParser {
 	return p
 }
 
-// If expected matches current, return true and go forward
-// Else return false and do nothing
 func (p *BaseParser) Peek(expected rune) bool {
 	if p.Test(expected) {
 		p.Next()
@@ -34,7 +36,6 @@ func (p *BaseParser) Peek(expected rune) bool {
 	return false
 }
 
-// Return current and go forward
 func (p *BaseParser) Next() rune {
 	r := p.currentChar
 	next, err := p.src.Next()
@@ -64,8 +65,9 @@ func (p *BaseParser) incrementCharOrLineNumber(c rune) {
 	p.charNumber++
 }
 
-func (p *BaseParser) LineNumber() int { return p.lineNumber }
-func (p *BaseParser) CharNumber() int { return p.charNumber }
+func (p *BaseParser) CurrentChar() rune { return p.currentChar }
+func (p *BaseParser) LineNumber() int   { return p.lineNumber }
+func (p *BaseParser) CharNumber() int   { return p.charNumber }
 
 func (p *BaseParser) Test(expected rune) bool {
 	return expected == p.currentChar
