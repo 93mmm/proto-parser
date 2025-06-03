@@ -59,3 +59,42 @@ func Test_Integration_Package(t *testing.T) {
 		{Name: "example", Type: constants.Package, Line: 1, Start: 9, End: 16},
 	})
 }
+
+func Test_Integration_Import(t *testing.T) {
+	runTestFromFile(t, "testdata/import.proto", []*symbols.Symbol{
+		{Name: "google/protobuf/timestamp.proto", Type: constants.Import, Line: 1, Start: 8, End: 41},
+	})
+}
+
+func Test_Integration_Option(t *testing.T) {
+	runTestFromFile(t, "testdata/option.proto", []*symbols.Symbol{
+		{Name: "go_package", Type: constants.Option, Line: 1, Start: 8, End: 18},
+	})
+}
+
+func Test_Integration_Service(t *testing.T) {
+	runTestFromFile(t, "testdata/service.proto", []*symbols.Symbol{
+		{Name: "Example", Type: constants.Service, Line: 1, Start: 9, End: 16},
+		{Name: "Example", Type: constants.Service, Line: 3, Start: 9, End: 16},
+		{Name: "ExampleRPC", Type: constants.Rpc, Line: 4, Start: 7, End: 17},
+		{Name: "ExampleRPC1", Type: constants.Rpc, Line: 5, Start: 7, End: 18},
+		{Name: "ExampleRPC2", Type: constants.Rpc, Line: 6, Start: 7, End: 18},
+		{Name: "ExampleRPC3", Type: constants.Rpc, Line: 7, Start: 7, End: 18},
+		{Name: "ExampleRPC4", Type: constants.Rpc, Line: 8, Start: 7, End: 18},
+	})
+}
+
+func Test_Integration_Enum(t *testing.T) {
+	runTestFromFile(t, "testdata/enum.proto", []*symbols.Symbol{
+		{Name: "ExampleEnum", Type: constants.Enum, Line: 1, Start: 6, End: 17},
+		{Name: "ExampleEnum", Type: constants.Enum, Line: 2, Start: 6, End: 17},
+	})
+}
+
+func Test_Integration_Message(t *testing.T) {
+	runTestFromFile(t, "testdata/message.proto", []*symbols.Symbol{
+		{Name: "ExampleRPCRequest", Type: constants.Message, Line: 1, Start: 9, End: 26},
+		{Name: "ExampleRPCRequest", Type: constants.Message, Line: 2, Start: 9, End: 26},
+		{Name: "ExampleRPCRequest", Type: constants.Message, Line: 8, Start: 9, End: 26},
+	})
+}

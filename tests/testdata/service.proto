@@ -1,0 +1,9 @@
+service Example {
+}
+service Example {
+  rpc ExampleRPC(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+  rpc ExampleRPC1(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+  rpc ExampleRPC2(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+  rpc ExampleRPC3(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+  rpc ExampleRPC4(ExampleRPCRequest) returns (ExampleRPCResponse) {};
+}

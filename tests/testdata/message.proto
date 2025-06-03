@@ -1,0 +1,13 @@
+message ExampleRPCRequest {}
+message ExampleRPCRequest {
+  message Emb { string field11 = 1; }
+  ExampleEnum field1 = 1;
+  Emb filed2 = 2;
+  google.protobuf.Timestamp filed3 = 3;
+}
+message ExampleRPCRequest {
+  message Emb { string field11 = 1; }
+  message Emb { string field11 = 1; }
+  message Emb { string field11 = 1; }
+  message Emb { string field11 = 1; }
+}
