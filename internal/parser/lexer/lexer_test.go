@@ -3,7 +3,6 @@ package lexer
 import (
 	"testing"
 
-	"github.com/93mmm/proto-parser/internal/parser/constants"
 	"github.com/stretchr/testify/assert"
 )
 
@@ -102,60 +101,53 @@ func Test_Lexer_ExtractQuotedString(t *testing.T) {
 	runLexerTest(t, (*Lexer).ExtractQuotedString, tests)
 }
 
-func TestParser_ExtractName(t *testing.T) {
-	t.Run("Normal names", func(t *testing.T) {
-		input := "One_Two_Three"
-		expected := "One_Two_Three"
-		parser := newTestLexer(input)
+func Test_Lexer_ExtractName(t *testing.T) {
+	tests := []testCase{
+		{
+			"Normal parsing",
+			"One_Two_Three",
+			"One_Two_Three",
+			false,
+		}, {
+			"Normal parsing",
+			"One_Two_Three()",
+			"One_Two_Three",
+			false,
+		},
+	}
 
-		actual, err := parser.ExtractName()
-		assert.Equal(t, expected, actual)
-		assert.NoError(t, err)
-	})
+	runLexerTest(t, (*Lexer).ExtractName, tests)
 }
 
-func TestParser_ExtractNameBetweenParantheses(t *testing.T) {
-	t.Run("Normal names", func(t *testing.T) {
-		input := "(One_Two_Three)"
-		expected := "One_Two_Three"
-		parser := newTestLexer(input)
+func Test_Lexer_ExtractNameBetweenParens(t *testing.T) {
+	tests := []testCase{
+		{
+			"Normal parsing",
+			"(One_Two_Three)",
+			"One_Two_Three",
+			false,
+		}, {
+			"No parens",
+			"One_Two_Three",
+			"",
+			true,
+		}, {
+			"No open paren",
+			"One_Two_Three)",
+			"",
+			true,
+		}, {
+			"No matching paren",
+			"(One_Two_Three",
+			"",
+			true,
+		},
+	}
 
-		actual, err := parser.ExtractNameBetweenParentheses()
-		assert.Equal(t, expected, actual)
-		assert.NoError(t, err)
-
-		actual, err = parser.ExtractKeyword()
-		assert.Equal(t, "", actual)
-		assert.Error(t, err)
-	})
+	runLexerTest(t, (*Lexer).ExtractNameBetweenParentheses, tests)
 }
 
-func TestParser_SkipUntilNextLine(t *testing.T) {
-	input := "one two : three"
-	parser := newTestLexer(input)
-
-	parser.ExtractKeyword()
-	parser.SkipUntilMatch(constants.Colon)
-
-	assert.True(t, parser.Test(constants.Colon))
-
-	parser.Next()
-
-	actual, err := parser.ExtractKeyword()
-	assert.Equal(t, "three", actual)
-	assert.NoError(t, err)
-}
-
-func TestParser_SkipCurlyBraces(t *testing.T) {
-	input := "{{{{{{{{{{{{{{}}}}}}}}}}}}}}"
-	parser := newTestLexer(input)
-	parser.SkipCurlyBraces()
-
-	t.Log(parser.CharNumber())
-	assert.True(t, parser.EOF())
-}
-
-func Test_Parser_SkipCurlyBraces(t *testing.T) {
+func Test_Lexer_SkipCurlyBraces(t *testing.T) {
 	type result struct {
 		ret bool
 		eof bool
