@@ -20,7 +20,7 @@ var filterMap = map[string]struct{}{
 }
 
 func filterPrint(el *symbols.Symbol) {
-	if _, ok := filterMap[el.Type()]; ok {
+	if _, ok := filterMap[el.Type]; ok {
 		fmt.Println(el)
 	}
 }
